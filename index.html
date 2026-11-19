@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BNI 長橋名人堂分會｜加入後，你的合作夥伴地圖</title>
+<meta name="description" content="輸入你的專業，立刻看到加入 BNI 長橋名人堂分會後，上游供應、下游客戶與同客群互推的合作夥伴。">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@700;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<style>
+:root{
+  --red:#C8102E; --red-d:#9E0B23; --red-soft:#FCE8EB;
+  --ink:#1D1D1F; --ink2:#55565B; --ink3:#8A8B90;
+  --line:#E4E4E7; --bg:#F6F5F3; --card:#FFFFFF;
+  --up:#2C6BD6; --up-soft:#E7F0FD;
+  --down:#E0661B; --down-soft:#FDEFE5;
+  --peer:#B08A1E; --peer-soft:#FBF3E0;
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+button{font:inherit;cursor:pointer}
+.wrap{max-width:1360px;margin:0 auto;padding:0 24px}
+
+/* ---------- Hero ---------- */
+.hero{background:linear-gradient(135deg,#1D1D1F 0%,#2A2A2E 55%,#4A0F1B 100%);color:#fff;position:relative;overflow:hidden}
+.hero:after{content:"";position:absolute;right:-140px;top:-160px;width:480px;height:480px;border-radius:50%;border:70px solid rgba(200,16,46,.16)}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 0 0;gap:16px;position:relative;z-index:1}
+.brand{display:flex;align-items:center;gap:12px}
+.badge{background:var(--red);color:#fff;font-weight:900;letter-spacing:.08em;padding:6px 12px;border-radius:8px;font-size:18px}
+.brand b{font-size:16px;display:block;line-height:1.3}
+.brand small{display:block;color:#C9C9CE;font-size:12px;line-height:1.4}
+.toplinks{display:flex;gap:10px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:8px 16px;font-weight:700;font-size:14px;text-decoration:none;border:1px solid transparent;transition:.15s;background:none}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:var(--red-d)}
+.btn-ghost{border-color:rgba(255,255,255,.35);color:#fff}.btn-ghost:hover{background:rgba(255,255,255,.1)}
+.btn-line{background:#06C755;color:#fff}
+.btn-out{border-color:var(--line);color:var(--ink2);background:#fff}.btn-out:hover{border-color:var(--ink3)}
+.heroGrid{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px;align-items:end;padding:28px 0 22px;position:relative;z-index:1}
+.kicker{color:#FF9AAA;font-weight:700;font-size:14px;letter-spacing:.06em}
+h1{font-family:"Noto Serif TC",serif;font-weight:900;font-size:clamp(28px,4.2vw,50px);line-height:1.18;letter-spacing:.02em;margin-top:4px}
+.sub{color:#D4D4D8;margin-top:8px;max-width:640px}
+.stats{display:flex;gap:26px}
+.stat b{display:block;font-size:40px;font-weight:900;line-height:1}
+.stat span{font-size:12px;color:#C9C9CE}
+.goal{margin-top:12px;width:100%;min-width:260px}
+.goal .track{height:8px;border-radius:4px;background:rgba(255,255,255,.15);overflow:hidden}
+.goal .track i{display:block;height:100%;background:linear-gradient(90deg,var(--red),#FF7A8F)}
+.goal small{display:flex;justify-content:space-between;color:#C9C9CE;font-size:12px;margin-top:5px}
+
+/* simulator */
+.sim{position:relative;z-index:1;background:#fff;color:var(--ink);border-radius:16px;padding:18px;box-shadow:0 10px 30px rgba(0,0,0,.3);margin-bottom:22px}
+.sim h2{font-size:17px;display:flex;align-items:center;gap:8px}
+.sim h2 .dot{width:10px;height:10px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px var(--red-soft)}
+.simRow{display:grid;grid-template-columns:1.3fr 1fr auto;gap:10px;margin-top:12px}
+.field label{display:block;font-size:12px;color:var(--ink3);margin-bottom:4px}
+.field input{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;font:inherit;font-size:16px;outline:0;transition:.15s}
+.field input:focus{border-color:var(--red)}
+.simGo{align-self:end;background:var(--red);color:#fff;border:0;border-radius:10px;padding:12px 22px;font-weight:900;font-size:16px;white-space:nowrap}
+.simGo:hover{background:var(--red-d)}
+.examples{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;align-items:center;font-size:13px;color:var(--ink3)}
+.ex{border:1px solid var(--line);background:#FAFAF9;border-radius:999px;padding:2px 11px;font-size:13px;color:var(--ink2)}
+.ex:hover{border-color:var(--red);color:var(--red)}
+.stripe{height:4px;background:linear-gradient(90deg,var(--red) 0 45%,#C9962B 45% 60%,#3A3A3F 60%)}
+
+/* ---------- Layout ---------- */
+main.wrap{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:20px;padding-top:20px;padding-bottom:28px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius)}
+.mapcard{overflow:hidden;align-self:start}
+.maphead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.legend{display:flex;gap:14px;font-size:13px;color:var(--ink2);flex-wrap:wrap}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.mapctl{display:flex;gap:8px;align-items:center}
+.msearch{border:1px solid var(--line);border-radius:8px;padding:5px 10px;font:inherit;font-size:13px;width:170px;outline:0}
+.msearch:focus{border-color:var(--ink3)}
+.mapctl button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font-size:13px;color:var(--ink2)}
+#map{display:block;width:100%;aspect-ratio:1200/780;background:radial-gradient(circle at 1px 1px,#E9E8E5 1px,transparent 0) 0 0/22px 22px,#FBFAF8;cursor:grab;touch-action:none}
+#map:active{cursor:grabbing}
+.maptip{font-size:12px;color:var(--ink3);padding:8px 16px;border-top:1px solid var(--line)}
+
+/* SVG */
+.cl-bg{fill:#fff;stroke:#E1E0DC;stroke-width:1.2}
+.cl.focus .cl-bg{stroke:var(--red);stroke-width:2.2}
+.cl.dim .cl-bg{fill:#FAFAF9}
+.cl-no{font-size:13px;font-weight:900;fill:#fff;text-anchor:middle;pointer-events:none}
+.cl-noBg{fill:var(--red)}
+.cl-name{font-size:17px;font-weight:700;fill:var(--ink);text-anchor:middle;pointer-events:none}
+.cl-sub{font-size:12px;fill:var(--ink3);text-anchor:middle;pointer-events:none}
+.cl-hit{fill:transparent;cursor:pointer}
+.node{cursor:pointer}
+.node circle{fill:#7D7D84;stroke:#fff;stroke-width:2}
+.node.mentor circle{fill:#fff;stroke:#7D7D84;stroke-width:2.2}
+.node text{font-size:13px;fill:var(--ink2);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:#fff;stroke-width:3.5px}
+.node.sel circle{fill:var(--ink);stroke:var(--red);stroke-width:3.5}
+.node.up circle{fill:var(--up)} .node.down circle{fill:var(--down)} .node.peer circle{fill:var(--peer)} .node.both circle{fill:url(#both)}
+.node.sel text,.node.up text,.node.down text,.node.peer text,.node.both text{fill:var(--ink);font-weight:700}
+.node.faded{opacity:.2}
+.guest circle{fill:var(--red);stroke:#fff;stroke-width:3}
+.guest .halo{fill:none;stroke:var(--red);stroke-width:2;opacity:.6;animation:pulse 1.6s ease-out infinite;transform-box:fill-box;transform-origin:center}
+.guest text{font-size:14px;font-weight:900;fill:var(--red);text-anchor:middle;paint-order:stroke;stroke:#fff;stroke-width:4px}
+@keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.6);opacity:0}}
+.link{fill:none;opacity:.8}
+.link.up{stroke:var(--up)} .link.down{stroke:var(--down)} .link.both{stroke:#8E4FC0}
+.link.peer{stroke:var(--peer);stroke-dasharray:5 4}
+
+/* ---------- Panel ---------- */
+aside{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto;scroll-margin-top:12px}
+.panel{padding:20px}
+.back{border:0;background:none;color:var(--red);font-weight:700;font-size:14px;margin-bottom:10px;padding:0}
+.eyebrow{font-size:12px;color:var(--ink3);letter-spacing:.06em}
+.panel h2{font-family:"Noto Serif TC",serif;font-size:24px;line-height:1.3;margin:2px 0 8px}
+.panel h3{font-size:14.5px;margin:20px 0 8px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.panel h3 small{font-weight:400;color:var(--ink3);font-size:12px}
+.lead{color:var(--ink2);margin:6px 0}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tag{background:#F1F1F3;border-radius:6px;padding:2px 9px;font-size:13px;color:var(--ink2);border:0}
+.tag.red{background:var(--red-soft);color:var(--red-d);font-weight:700}
+.tag.pick{cursor:pointer}.tag.pick:hover,.tag.pick.on{background:var(--ink);color:#fff}
+.box{background:#FAFAF9;border:1px solid var(--line);border-radius:12px;padding:14px;margin-top:10px}
+.box.red{background:var(--red-soft);border-color:#F5C9D1}
+.box.warn{background:#FFF7E6;border-color:#F3DDA8}
+.box p{font-size:14px}
+.box b{color:var(--red-d)}
+.big{font-size:46px;font-weight:900;line-height:1;color:var(--red)}
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.kpi{border-radius:10px;padding:10px;text-align:center}
+.kpi b{display:block;font-size:26px;font-weight:900;line-height:1.1}
+.kpi span{font-size:12px}
+.kpi.up{background:var(--up-soft);color:var(--up)} .kpi.down{background:var(--down-soft);color:var(--down)} .kpi.peer{background:var(--peer-soft);color:var(--peer)}
+.list{list-style:none}
+.list li{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;cursor:pointer;border-bottom:1px solid #F2F2F3}
+.list li:hover{background:#F7F7F8}
+.nm{font-weight:700}
+.meta{font-size:12px;color:var(--ink3)}
+.why{font-size:12.5px;color:var(--ink2)}
+.pill{flex:none;font-size:12px;font-weight:700;border-radius:999px;padding:1px 9px;white-space:nowrap}
+.pill.up{background:var(--up-soft);color:var(--up)} .pill.down{background:var(--down-soft);color:var(--down)}
+.pill.peer{background:var(--peer-soft);color:var(--peer)} .pill.both{background:#F2E9FA;color:#7A3FAE}
+.pill.mentor{background:#F1F1F3;color:var(--ink2);font-weight:500}
+.sec-up h3{color:var(--up)} .sec-down h3{color:var(--down)} .sec-peer h3{color:var(--peer)}
+.chains{display:grid;gap:8px}
+.chainBtn{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;text-align:left}
+.chainBtn:hover{border-color:var(--red)}
+.chainBtn .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--red);color:#fff;font-weight:900;display:grid;place-items:center;font-size:13px}
+.chainBtn b{display:block;font-size:14px}
+.chainBtn span{font-size:12px;color:var(--ink3)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.actions .btn{font-size:13px;padding:7px 14px}
+.empty{color:var(--ink3);font-size:14px;padding:6px 0}
+.steps{counter-reset:s;list-style:none;margin-top:6px}
+.steps li{counter-increment:s;position:relative;padding:6px 0 6px 34px;font-size:14px;color:var(--ink2)}
+.steps li:before{content:counter(s);position:absolute;left:0;top:6px;width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-weight:700;font-size:12px;display:grid;place-items:center}
+footer{max-width:1360px;margin:0 auto;padding:0 24px 40px;color:var(--ink3);font-size:12.5px}
+footer p+p{margin-top:4px}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media (max-width:1040px){
+  main.wrap{grid-template-columns:1fr}
+  aside{position:static;max-height:none;order:-1}
+  .heroGrid{grid-template-columns:1fr}
+}
+@media (max-width:640px){
+  .wrap{padding:0 14px}
+  .simRow{grid-template-columns:1fr}
+  .stats{gap:18px}.stat b{font-size:30px}
+  .toplinks .btn-ghost{display:none}
+  #map{aspect-ratio:1/1.05}
+  .msearch{width:120px}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="topbar">
+      <div class="brand">
+        <span class="badge">BNI</span>
+        <div><b id="chapterName">長橋名人堂分會</b><small id="chapterTag"></small></div>
+      </div>
+      <div class="toplinks">
+        <a class="btn btn-ghost" id="lnkSite" href="#" target="_blank" rel="noopener">分會行事曆</a>
+        <a class="btn btn-red" id="lnkLine" href="#" target="_blank" rel="noopener">我想參加例會</a>
+      </div>
+    </div>
+
+    <div class="heroGrid">
+      <div>
+        <div class="kicker">給來賓：加入前，先看看你的商機</div>
+        <h1>如果你加入長橋，<br>誰會成為你的合作夥伴？</h1>
+        <p class="sub">輸入你的專業，系統會依 8 條產業服務鏈，標出可以供應你的上游、會買你服務的下游，以及服務同一群客戶、能互相轉介的夥伴。</p>
+      </div>
+      <div>
+        <div class="stats">
+          <div class="stat"><b id="stMembers">0</b><span>位創會夥伴</span></div>
+          <div class="stat"><b id="stChains">8</b><span>條服務鏈</span></div>
+          <div class="stat"><b id="stMentors">0</b><span>位輔導團隊</span></div>
+        </div>
+        <div class="goal"><div class="track"><i id="goalBar"></i></div><small><span id="goalTxt"></span><span id="goalDate"></span></small></div>
+      </div>
+    </div>
+
+    <div class="sim" id="simForm" role="search">
+      <h2><span class="dot"></span>模擬我加入長橋</h2>
+      <div class="simRow">
+        <div class="field"><label for="gProf">你的專業／行業（必填）</label><input id="gProf" placeholder="例如：烘焙坊、室內設計、會計師、攝影"></div>
+        <div class="field"><label for="gName">你的稱呼（選填）</label><input id="gName" placeholder="例如：王小明"></div>
+        <button class="simGo" id="simGo" type="button">看我的合作夥伴 →</button>
+      </div>
+      <div class="examples" id="examples">試試看：</div>
+    </div>
+  </div>
+  <div class="stripe"></div>
+</header>
+
+<main class="wrap">
+  <section class="card mapcard">
+    <div class="maphead">
+      <div class="legend">
+        <span><i style="background:var(--up)"></i>上游供應</span>
+        <span><i style="background:var(--down)"></i>下游客戶</span>
+        <span><i style="background:#8E4FC0"></i>雙向合作</span>
+        <span><i style="background:var(--peer)"></i>同客群互推</span>
+        <span><i style="background:#fff;border:2px solid #7D7D84"></i>輔導團隊</span>
+      </div>
+      <div class="mapctl">
+        <input class="msearch" id="mq" type="search" placeholder="找會員或專業">
+        <button id="reset" type="button">重設</button>
+      </div>
+    </div>
+    <svg id="map" role="img" aria-label="長橋名人堂分會產業服務鏈地圖">
+      <defs><linearGradient id="both"><stop offset="50%" stop-color="#2C6BD6"/><stop offset="50%" stop-color="#E0661B"/></linearGradient></defs>
+    </svg>
+    <div class="maptip">每個圓點是一位夥伴，點圓點看他的上下游；點服務鏈看整條鏈。可拖曳、縮放。</div>
+  </section>
+  <aside class="card" id="aside"><div class="panel" id="panel"></div></aside>
+</main>
+
+<footer>
+  <p>合作關係依各夥伴的產業類型與一般產業鏈推算，代表<b>可能的合作方向</b>，不代表實際交易。BNI 每個專業在分會中只保留一個席位。</p>
+  <p>資料依分會 2026/11/19 團隊名單與「產業服務鏈合作藍圖」整理。資料更新請洽分會。</p>
+</footer>
+<div class="toast" id="toast"></div>
+
+<script>
+/* =====================================================================
+   1. 分會設定
+   ===================================================================== */
+const CONFIG = {
+  chapter: "長橋名人堂分會",
+  tagline: "BNI Accelerate｜週四 06:30–08:30 例會",
+  siteUrl: "https://changqiao-adventure.web.app/#/calendar",   // 分會行事曆
+  lineUrl: "",                                                // 來賓報名／LINE 連結（空白則隱藏）
+  goal: { target: 50, deadline: "12/31", note: "12/11 授證晚宴" },
+  examples: ["會計師","月子中心","冷凍配送","超跑車商","人資顧問","物業管理","婚紗攝影","包裝設計","室內設計","烘焙坊"]
+};
+
+/* =====================================================================
+   2. 產業類型與上下游關係 —— 推算的核心
+   sup：這個類型「供應／服務」哪些類型（＝對方是它的下游客戶）
+   ===================================================================== */
+const TYPES = {
+  pack:      {name:"包材印刷",     sup:["mfg","food","beautyprod","restaurant","kitchen"]},
+  logi:      {name:"物流貿易",     sup:["mfg","restaurant","food","beautyprod","pack","luxury","homelife"]},
+  kitchen:   {name:"食品代工與餐飲設備", sup:["food","restaurant"]},
+  food:      {name:"食品品牌製造", sup:["restaurant","event"]},
+  restaurant:{name:"餐飲門市",     sup:[]},
+  beautyprod:{name:"美業產品",     sup:["beautysvc"]},
+  beautysvc: {name:"美容醫美服務", sup:[]},
+  health:    {name:"健康養生",     sup:[]},
+  mkt:       {name:"品牌行銷",     sup:["mfg","food","beautyprod","beautysvc","restaurant","design","realty","luxury","finance","kitchen","health","homelife","event","build"]},
+  event:     {name:"活動展覽",     sup:["food","beautyprod","luxury","finance","realty","health","beautysvc"]},
+  design:    {name:"空間建築設計", sup:["build","homelife","restaurant","beautysvc","health"]},
+  build:     {name:"工程建材",     sup:["restaurant","beautysvc"]},
+  homelife:  {name:"居家生活",     sup:[]},
+  realty:    {name:"不動產",       sup:["design","build","homelife","finance"]},
+  finance:   {name:"金融財稅法務", sup:["food","restaurant","pack","build","design","logi","kitchen","beautysvc","mfg"]},
+  luxury:    {name:"高端生活精品", sup:[]},
+  consult:   {name:"企管人資顧問", sup:["food","restaurant","pack","beautysvc","design","logi","kitchen","mfg","finance","build"]},
+  mfg:       {name:"製造工廠",     sup:["food","beautyprod","restaurant"]},
+  ai:        {name:"AI 與資訊系統", sup:["food","restaurant","pack","beautysvc","realty","logi","kitchen","design","finance","mfg","consult"]}
+};
+// 服務同一群客戶、適合互相轉介（雙向）
+const PEERS = [["luxury","finance"],["luxury","realty"],["luxury","beautysvc"],["luxury","health"],["luxury","homelife"],
+  ["finance","realty"],["homelife","build"],["homelife","realty"],["beautysvc","health"],["beautyprod","health"],
+  ["food","health"],["mkt","event"],["mkt","ai"],["consult","finance"],["consult","ai"],["consult","mkt"],["realty","consult"],["pack","logi"],["design","realty"],["restaurant","kitchen"]];
+
+// 來賓輸入的關鍵字 → 類型（由上往下比對，長詞優先）
+const KEYWORDS = [
+  ["政府補助|補助|企業顧問|管理顧問|人資|人力銀行|人力|教育訓練|培訓|展店顧問|講師|商務中心","consult"],
+  ["工廠|製造|二代|加工|機械|五金|電子","mfg"],
+  ["超跑|跑車|遊艇|招待會所|會所|私人俱樂部","luxury"],
+  ["月子|產後護理|藥局|健康管理|預防醫學|體態","health"],
+  ["婚紗|禮贈品|贈品","event"],
+  ["冷凍配送|冷鏈|配送","logi"],
+  ["餐飲設備|廚具","kitchen"],
+  ["物業","realty"],
+  ["品牌設計|平面設計|視覺設計|logo|包裝設計|網頁設計|ui","mkt"],
+  ["室內設計|空間設計|商空|建築|景觀|設計師","design"],
+  ["私人飛機|遊艇|珠寶|鑽石|名錶|精品|西服|西裝|訂製服|高爾夫|名車|藝術品|紅酒|威士忌","luxury"],
+  ["細胞|幹細胞|長照|養生|保健|營養|中醫|復健|物理治療|健身|瑜珈|整脊|推拿","health"],
+  ["醫美|診所|牙醫|皮膚科|美容|美甲|美睫|美髮|髮廊|沙龍|spa|紋繡|按摩|頭皮","beautysvc"],
+  ["保養品|化妝品|美妝|洗髮|育髮|香水|精油|面膜","beautyprod"],
+  ["包裝|印刷|貼紙|標籤|紙盒|紙袋|紙箱|彩盒|瓶|包材|膜|大圖輸出|輸出","pack"],
+  ["物流|貨運|報關|倉儲|進出口|快遞|貿易|海運|空運","logi"],
+  ["共享廚房|中央廚房|代工|oem|odm","kitchen"],
+  ["餐廳|餐飲|炸雞|小吃|加盟|連鎖|火鍋|飲料店|手搖|咖啡廳|早餐|便當|燒肉|酒吧","restaurant"],
+  ["食品|烘焙|麵包|蛋糕|甜點|蛋捲|堅果|茶|咖啡|農產|伴手禮|禮盒|食材|肉品|海鮮|水果|零食|醬|酒|漢方|滷味","food"],
+  ["行銷|廣告|短影|影音|影片|攝影|錄影|ip|社群|網站|seo|品牌|公關|直播|網紅|kol|文案|媒體|顧問","mkt"],
+  ["活動|展場|展覽|策展|婚禮|主持|尾牙|花藝|舞台|音響|燈光","event"],
+  ["裝修|裝潢|工程|水電|油漆|磁磚|地板|石膏|玻璃|系統櫃|泥作|防水|鐵工|建材|窗簾|燈具|磁吸|門窗|木工","build"],
+  ["床墊|寢具|收納|家具|傢俱|清潔|空調|冷氣|家電|居家|搬家|寵物|除蟲","homelife"],
+  ["房仲|仲介|不動產|房屋|建設|代銷|地政|包租|物業","realty"],
+  ["保險|壽險|貸款|銀行|理財|節稅|會計|記帳|律師|法律|傳承|信託|財務|稅務|證券|融資","finance"],
+  ["ai|人工智慧|系統|軟體|app|資訊|自動化|it|資安|數位轉型|erp|pos|雲端","ai"]
+];
+
+/* =====================================================================
+   3. 服務鏈與夥伴（依 2026/11/19 團隊名單＋產業服務鏈合作藍圖）
+   ===================================================================== */
+const CHAINS = [
+  {id:1, name:"包裝整合服務鏈", fit:["pack"], sub:"全球聯盒網", desc:"從貼紙、紙盒、瓶器到軟包材、紙袋，一次搞定品牌包裝。", wanted:["包裝企劃","包裝平面設計","人力銀行"]},
+  {id:2, name:"健康養生服務鏈", fit:["health","beautyprod"], sub:"Well Link",  desc:"漢方、育髮、健康食品，照顧身體由內而外。", wanted:["連鎖藥局","產後護理／月子中心","禮贈品業者"]},
+  {id:3, name:"餐飲連鎖服務鏈", fit:["food","restaurant","kitchen"], sub:"",           desc:"從食品工廠到連鎖門市與短影音行銷。",       wanted:["食品包材","冷凍配送","展店顧問","餐飲設備商"]},
+  {id:4, name:"品牌健康美業服務鏈", fit:["beautysvc","health"], sub:"",       desc:"外在形象到健康管理的高品質生活服務。",     wanted:["健康管理／預防醫學","私人健身教練／體態管理","企業顧問／人資顧問","婚紗攝影"]},
+  {id:5, name:"高資產服務鏈", fit:["luxury","finance","realty"], sub:"私享聯盟",     desc:"服務高資產客戶的生活、資產與傳承需求。",   wanted:["超跑車商","私人遊艇","私人招待會所"]},
+  {id:6, name:"品牌行銷服務鏈", fit:["mkt","ai","consult","event"], sub:"",           desc:"網站、IP、活動、品牌設計與 AI 工具。",     wanted:["企業教育訓練／人資顧問","會計師","商務律師"]},
+  {id:7, name:"設計工程服務鏈", fit:["design","build","homelife","realty"], sub:"建築商空",           desc:"建築、空間設計到施工建材與居家整理。",     wanted:["物業管理","商務中心"]},
+  {id:8, name:"行銷策展服務鏈", fit:["event","mkt","logi","mfg"], sub:"",           desc:"展場、品牌、美業平台與國際物流。",         wanted:["政府補助","製造工廠二代","美業連鎖品牌"]}
+];
+
+// no：會員編號；mentor：輔導團隊職稱；t：產業類型（可多個）
+const MEMBERS_BUILTIN = [
+  {no:8,  name:"段承韻", p:"貼紙印刷廠",     chain:1, t:["pack"]},
+  {no:10, name:"𡩋振福", p:"精裝紙盒工廠",   chain:1, t:["pack"]},
+  {no:20, name:"林鈞芃", p:"ESG 瓶器",       chain:1, t:["pack"]},
+  {no:21, name:"林筱錡", p:"收縮膜軟包材",   chain:1, t:["pack"]},
+  {no:18, name:"江懿哲", p:"紙袋包裝",       chain:1, t:["pack"]},
+  {no:1,  name:"郭羽庭", p:"漢方食品",       chain:2, t:["food","health"]},
+  {no:4,  name:"唐國蘭", p:"VIVFOL 美髮育髮", chain:2, t:["beautyprod","beautysvc"]},
+  {no:26, name:"徐晉棠", p:"精品堅果",       chain:2, t:["food"]},
+  {no:11, name:"袁敏禎", p:"人設短影行銷",   chain:3, t:["mkt"]},
+  {no:9,  name:"陳美蓉", p:"蛋捲工廠",       chain:3, t:["food"]},
+  {no:22, name:"吳得維", p:"連鎖炸雞",       chain:3, t:["restaurant"]},
+  {no:13, name:"林美足", p:"西服訂製",       chain:4, t:["luxury"]},
+  {no:19, name:"李雅雯", p:"細胞儲存",       chain:4, t:["health"]},
+  {no:28, name:"陳沛羽", p:"醫美診所",       chain:4, t:["beautysvc"]},
+  {no:30, name:"莊彥瑄", p:"私人飛機地勤服務", chain:5, t:["luxury"]},
+  {no:36, name:"周信廷", p:"AI 智能床墊",    chain:5, t:["homelife","luxury"]},
+  {no:34, name:"李惠珠", p:"珠寶設計",       chain:5, t:["luxury"]},
+  {no:31, name:"蘇豊文", p:"房屋仲介",       chain:5, t:["realty"]},
+  {no:38, name:"黃俊儒", p:"銀行工商貸款",   chain:5, t:["finance"]},
+  {no:23, name:"黃巧茵", p:"網站架設",       chain:6, t:["mkt"]},
+  {no:17, name:"林小蕎", p:"IP 行銷",        chain:6, t:["mkt"]},
+  {no:24, name:"張筱博", p:"活動企劃",       chain:6, t:["event"]},
+  {no:27, name:"楊小青", p:"共享廚房",       chain:6, t:["kitchen"]},
+  {no:12, name:"王思予", p:"商業空間設計",   chain:7, t:["design"]},
+  {no:37, name:"陳政顯", p:"建築師",         chain:7, t:["design"]},
+  {no:14, name:"鄭學謙", p:"收納整理",       chain:7, t:["homelife"]},
+  {no:29, name:"嚴麒祥", p:"石膏磚牆",       chain:7, t:["build"]},
+  {no:33, name:"李宥綸", p:"木地板",         chain:7, t:["build"]},
+  {no:35, name:"廖毓靖", p:"空調清潔",       chain:7, t:["homelife","build"]},
+  {no:6,  name:"鄭國信", p:"展場製作",       chain:8, t:["event"]},
+  {no:7,  name:"師嘉孝", p:"品牌設計",       chain:8, t:["mkt"]},
+  {no:15, name:"田小燕", p:"美業聯合網",     chain:8, t:["mkt"]},
+  {no:25, name:"郭盈甫", p:"國際物流",       chain:8, t:["logi"]},
+  // 輔導團隊
+  {mentor:"董事顧問", name:"李政賓", p:"包裝印刷",     chain:1, t:["pack"]},
+  {mentor:"營運大使", name:"李光益", p:"訂製家具",     chain:7, t:["homelife","build"]},
+  {mentor:"助理大使", name:"吳正順", p:"品牌設計",     chain:6, t:["mkt"]},
+  {mentor:"助理大使", name:"龔奕如", p:"家族資產傳承", chain:5, t:["finance"]},
+  {mentor:"助理大使", name:"李佳宇", p:"AI 自動化系統", chain:6, t:["ai"]},
+  {mentor:"助理大使", name:"徐裔翔", p:"U 型玻璃工程", chain:7, t:["build"]},
+  {mentor:"助理大使", name:"廖柏晴", p:"立體磁吸磚",   chain:7, t:["build"]}
+];
+
+/* =====================================================================
+   4. 程式
+   ===================================================================== */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const CH=Object.fromEntries(CHAINS.map(c=>[c.id,c]));
+const isPeer=(a,b)=>PEERS.some(p=>(p[0]===a&&p[1]===b)||(p[0]===b&&p[1]===a));
+const tname=t=>TYPES[t]?.name||t;
+let MEMBERS=MEMBERS_BUILTIN.map((m,i)=>({...m,id:"m"+i}));
+const SEATED=()=>MEMBERS.filter(m=>!m.mentor);
+
+/* ---- 關係：A 與 B 的類型比對 ---- */
+function relate(ta,tb){
+  // up：B 供應 A（B 是 A 的上游）；down：A 供應 B（B 是 A 的下游）；peer：同客群
+  let up=null,down=null,peer=null;
+  for(const a of ta) for(const b of tb){
+    if(!up && TYPES[b]?.sup.includes(a)) up=[b,a];
+    if(!down && TYPES[a]?.sup.includes(b)) down=[a,b];
+    if(!peer && (isPeer(a,b) || (a===b))) peer=[a,b];
+  }
+  const kind=up&&down?"both":up?"up":down?"down":peer?"peer":null;
+  return {kind,up,down,peer};
+}
+function reasonText(r,who){ // who = 對方名稱
+  if(r.kind==="both") return `互為上下游：他可以提供你「${tname(r.up[0])}」，你也能服務他`;
+  if(r.kind==="up")   return `他的「${tname(r.up[0])}」可以供應／支援你的「${tname(r.up[1])}」`;
+  if(r.kind==="down") return `你的「${tname(r.down[0])}」能服務他的「${tname(r.down[1])}」`;
+  if(r.peer && r.peer[0]===r.peer[1]) return `同屬「${tname(r.peer[0])}」不同專業，可互相轉介案子`;
+  return `你們都服務「${tname(r.peer[0])}」與「${tname(r.peer[1])}」的客戶，可互相轉介`;
+}
+function relationsFor(types,chain,selfId){
+  return MEMBERS.filter(m=>m.id!==selfId).map(m=>{
+    const r=relate(types,m.t); if(!r.kind) return null;
+    const score=({both:6,up:4,down:4,peer:3})[r.kind]+(m.chain===chain?1:0)-(m.mentor?.5:0);
+    return {m,...r,score,why:reasonText(r)};
+  }).filter(Boolean).sort((a,b)=>b.score-a.score);
+}
+
+/* ---- 來賓：專業 → 類型 ---- */
+function detectTypes(text){
+  const s=text.toLowerCase().replace(/\s+/g,"");
+  const out=[];
+  for(const [kw,t] of KEYWORDS){ if(new RegExp(kw,"i").test(s) && !out.includes(t)) out.push(t); }
+  return out.slice(0,2);
+}
+function seatConflict(text){
+  const s=text.replace(/\s+/g,"").toLowerCase();
+  if(s.length<2) return null;
+  return SEATED().find(m=>{const p=m.p.replace(/\s+/g,"").toLowerCase(); return p===s || p.includes(s) || s.includes(p);})||null;
+}
+function wantedHit(text){
+  const s=text.replace(/\s+/g,"").toLowerCase();
+  for(const c of CHAINS) for(const w of c.wanted) for(const part of w.split(/[／\/、]/)){
+    const x=part.replace(/\s+/g,"").toLowerCase(); if(x.length>=2&&(x.includes(s)||s.includes(x)||(s.length>=2&&x.slice(0,2)===s.slice(0,2)&&x.slice(-2)===s.slice(-2)))) return {c,w};}
+  return null;
+}
+function bestChain(types,rels){
+  const sc={}; CHAINS.forEach(c=>sc[c.id]=0);
+  CHAINS.forEach(c=>{ if(c.fit.some(t=>types.includes(t))) sc[c.id]+=12; });
+  MEMBERS.forEach(m=>{ if(m.t.some(t=>types.includes(t))) sc[m.chain]+=3; });
+  CHAINS.forEach(c=>{const n=MEMBERS.filter(m=>m.chain===c.id).length||1;
+    sc[c.id]+=rels.filter(r=>r.m.chain===c.id).reduce((a,r)=>a+r.score,0)/n;});
+  return +Object.entries(sc).sort((a,b)=>b[1]-a[1])[0][0];
+}
+
+/* ---- 地圖 ---- */
+const W=1200,H=780;
+const svg=d3.select("#map").attr("viewBox",`0 0 ${W} ${H}`).attr("preserveAspectRatio","xMidYMid meet");
+const root=svg.append("g");
+const gCl=root.append("g"),gLinks=root.append("g"),gNodes=root.append("g"),gGuest=root.append("g");
+const zoom=d3.zoom().scaleExtent([.6,4]).on("zoom",e=>root.attr("transform",e.transform));
+svg.call(zoom).on("dblclick.zoom",null);
+const L={},POS=new Map();
+function layout(){
+  const cols=4,rows=2,cw=W/cols,rh=H/rows;
+  CHAINS.forEach((c,i)=>{L[c.id]={x:cw*(i%cols)+cw/2,y:rh*Math.floor(i/cols)+rh/2+6,r:Math.min(cw,rh)/2-10};});
+}
+function place(chainId,extra=0){
+  const ms=MEMBERS.filter(m=>m.chain===chainId), n=ms.length+extra, golden=Math.PI*(3-Math.sqrt(5)), c=L[chainId];
+  const spread=Math.min(c.r-40,31*Math.sqrt(n)+4);
+  const pts=[...Array(n)].map((_,i)=>{const rr=n===1?0:spread*Math.sqrt((i+.5)/n),a=i*golden-Math.PI/2;return {x:c.x+rr*Math.cos(a),y:c.y+14+rr*Math.sin(a)}});
+  return {ms,pts};
+}
+function drawMap(guestChain=null){
+  gCl.selectAll("*").remove();gNodes.selectAll("*").remove();gGuest.selectAll("*").remove();POS.clear();
+  const cl=gCl.selectAll("g").data(CHAINS).join("g").attr("class","cl").attr("data-id",d=>d.id);
+  cl.append("circle").attr("class","cl-bg").attr("cx",d=>L[d.id].x).attr("cy",d=>L[d.id].y).attr("r",d=>L[d.id].r);
+  cl.append("circle").attr("class","cl-hit").attr("cx",d=>L[d.id].x).attr("cy",d=>L[d.id].y).attr("r",d=>L[d.id].r).on("click",(e,d)=>go({view:"chain",id:d.id}));
+  cl.append("circle").attr("class","cl-noBg").attr("cx",d=>L[d.id].x).attr("cy",d=>L[d.id].y-L[d.id].r+22).attr("r",12);
+  cl.append("text").attr("class","cl-no").attr("x",d=>L[d.id].x).attr("y",d=>L[d.id].y-L[d.id].r+26.5).text(d=>d.id);
+  cl.append("text").attr("class","cl-name").attr("x",d=>L[d.id].x).attr("y",d=>L[d.id].y-L[d.id].r+56).text(d=>d.name);
+  cl.append("text").attr("class","cl-sub").attr("x",d=>L[d.id].x).attr("y",d=>L[d.id].y-L[d.id].r+73)
+    .text(d=>`${d.sub?d.sub+"・":""}${MEMBERS.filter(m=>m.chain===d.id).length} 位夥伴`);
+  const items=[];
+  CHAINS.forEach(c=>{const {ms,pts}=place(c.id,c.id===guestChain?1:0);
+    ms.forEach((m,i)=>{items.push({m,...pts[i]});POS.set(m.id,pts[i]);});
+    if(c.id===guestChain) POS.set("guest",pts[pts.length-1]);});
+  const g=gNodes.selectAll("g").data(items).join("g").attr("class",d=>"node"+(d.m.mentor?" mentor":""))
+    .attr("transform",d=>`translate(${d.x},${d.y})`).on("click",(e,d)=>{e.stopPropagation();go({view:"member",id:d.m.id})});
+  g.append("circle").attr("r",10);
+  g.append("text").attr("y",25).text(d=>d.m.name);
+  g.append("title").text(d=>`${d.m.name}｜${d.m.p}`);
+}
+function curve(A,B){const mx=(A.x+B.x)/2,my=(A.y+B.y)/2-Math.min(90,Math.hypot(B.x-A.x,B.y-A.y)*.2);return `M${A.x},${A.y} Q${mx},${my} ${B.x},${B.y}`}
+function paint(st){
+  gLinks.selectAll("*").remove();
+  const nodes=gNodes.selectAll(".node");
+  nodes.classed("sel up down peer both faded",false);
+  gCl.selectAll(".cl").classed("focus dim",false);
+  let center=null,rels=null,focusChain=null,selId=null;
+  if(st.view==="guest"){center=POS.get("guest");rels=st.rels;focusChain=st.chain;}
+  else if(st.view==="member"){const m=MEMBERS.find(x=>x.id===st.id);if(!m)return;center=POS.get(m.id);rels=relationsFor(m.t,m.chain,m.id);focusChain=m.chain;selId=m.id;}
+  if(rels){
+    const map=new Map(rels.map(r=>[r.m.id,r]));
+    nodes.each(function(d){const r=map.get(d.m.id);const s=d3.select(this);
+      s.classed("sel",d.m.id===selId).classed(r?.kind||"_",!!r).classed("faded",!r&&d.m.id!==selId);});
+    rels.forEach(r=>{const B=POS.get(r.m.id);if(!B)return;
+      gLinks.append("path").attr("class","link "+r.kind).attr("d",curve(center,B)).attr("stroke-width",r.kind==="peer"?1.4:1.2+r.score/3);});
+    gCl.selectAll(".cl").classed("focus",d=>d.id===focusChain);
+    gNodes.selectAll(".node.sel").raise();
+  } else if(st.view==="chain"){
+    gCl.selectAll(".cl").classed("focus",d=>d.id===st.id).classed("dim",d=>d.id!==st.id);
+    nodes.classed("faded",d=>d.m.chain!==st.id);
+  } else if(st.view==="search"){
+    const hits=new Set(search(st.q).map(m=>m.id));
+    nodes.classed("faded",d=>!hits.has(d.m.id)).classed("sel",d=>hits.has(d.m.id));
+  }
+}
+function drawGuest(name){
+  const P=POS.get("guest"); if(!P) return;
+  const g=gGuest.append("g").attr("class","guest").attr("transform",`translate(${P.x},${P.y})`);
+  g.append("circle").attr("class","halo").attr("r",13);
+  g.append("circle").attr("r",13);
+  g.append("text").attr("y",30).text(name||"你");
+}
+function focusOn(x,y,k){svg.transition().duration(600).call(zoom.transform,d3.zoomIdentity.translate(W/2,H/2).scale(k).translate(-x,-y))}
+function resetView(){svg.transition().duration(500).call(zoom.transform,d3.zoomIdentity)}
+
+/* ---- 搜尋會員 ---- */
+function search(q){q=q.trim().toLowerCase();if(!q)return[];
+  return MEMBERS.filter(m=>[m.name,m.p,CH[m.chain].name,CH[m.chain].sub,...m.t.map(tname),m.no?m.no+"號":""].join(" ").toLowerCase().includes(q));}
+
+/* ---- 側欄 ---- */
+const P=$("#panel");
+const label={up:"上游",down:"下游",both:"雙向",peer:"互推"};
+const who=m=>`${m.no?m.no+"號 ":""}${m.name}`;
+function relRow(r){return `<li data-m="${r.m.id}"><div><div class="nm">${esc(r.m.p)}｜${esc(r.m.name)}</div><div class="why">${esc(r.why)}</div></div>${r.m.mentor?`<span class="pill mentor">${esc(r.m.mentor)}</span>`:`<span class="pill ${r.kind}">${label[r.kind]}</span>`}</li>`}
+function relSections(rels,youWord){
+  const up=rels.filter(r=>r.kind==="up"||r.kind==="both"), down=rels.filter(r=>r.kind==="down"||r.kind==="both"), peer=rels.filter(r=>r.kind==="peer");
+  const sec=(cls,title,hint,arr)=>arr.length?`<div class="sec-${cls}"><h3>${title} <small>${hint}・${arr.length} 位</small></h3><ul class="list">${arr.map((r,i)=>relRow(r).replace("<li ",i>=6?'<li hidden ':"<li ")).join("")}</ul>${arr.length>6?`<button class="btn btn-out more" style="margin-top:6px;font-size:13px">顯示全部 ${arr.length} 位</button>`:""}</div>`:"";
+  return {up,down,peer,html:
+    sec("up","上游供應",`可以提供${youWord}產品或服務`,up)+
+    sec("down","下游客戶",`可能購買${youWord}的服務`,down)+
+    sec("peer","同客群互推","客戶重疊，可互相轉介",peer)};
+}
+function bind(){
+  P.querySelectorAll("[data-m]").forEach(el=>el.onclick=()=>go({view:"member",id:el.dataset.m}));
+  P.querySelectorAll("[data-c]").forEach(el=>el.onclick=()=>go({view:"chain",id:+el.dataset.c}));
+  P.querySelectorAll("[data-t]").forEach(el=>el.onclick=()=>simulate($("#gProf").value,$("#gName").value,[el.dataset.t]));
+  P.querySelectorAll("[data-ex]").forEach(el=>el.onclick=()=>{$("#gProf").value=el.dataset.ex;simulate(el.dataset.ex,$("#gName").value)});
+  P.querySelectorAll(".more").forEach(b=>b.onclick=()=>{b.previousElementSibling.querySelectorAll("li[hidden]").forEach(li=>li.hidden=false);b.remove();});
+  P.querySelector(".back")?.addEventListener("click",()=>go(BACK||{view:"home"}));
+}
+
+function showHome(){
+  const n=SEATED().length;
+  P.innerHTML=`
+    <div class="eyebrow">長橋名人堂分會</div>
+    <h2>8 條服務鏈，${n} 位創會夥伴</h2>
+    <p class="lead">BNI 是每週固定見面、彼此引薦生意的商務團隊。每個專業只有一個席位，加入後，整個分會都會幫你介紹客戶。</p>
+    <div class="box red"><p><b>來賓怎麼用：</b>在上方輸入你的專業，按「看我的合作夥伴」，就能看到加入後有哪些上下游可以合作。</p></div>
+    <h3>產業服務鏈 <small>點擊查看成員</small></h3>
+    <div class="chains">${CHAINS.map(c=>`<button class="chainBtn" data-c="${c.id}"><span class="n">${c.id}</span><span><b>${esc(c.name)}${c.sub?`（${esc(c.sub)}）`:""}</b><span>${MEMBERS.filter(m=>m.chain===c.id).map(m=>m.p).join("、")}</span></span></button>`).join("")}</div>
+    <h3>分會正在邀請的專業 <small>點選模擬加入</small></h3>
+    <div class="tags">${[...new Set(CHAINS.flatMap(c=>c.wanted))].map(w=>`<button class="tag pick" data-ex="${esc(w)}">＋ ${esc(w)}</button>`).join("")}</div>`;
+  bind();
+}
+
+function simulate(prof,name,forceTypes){
+  prof=(prof||"").trim(); name=(name||"").trim();
+  if(!prof){ $("#gProf").focus(); return; }
+  const types=forceTypes||detectTypes(prof);
+  go({view:"guest",prof,name,types});
+}
+function showGuest(st){
+  const {prof,name,types}=st, you=name||"你";
+  const conflict=seatConflict(prof), wanted=conflict?null:wantedHit(prof);
+  if(!types.length){
+    P.innerHTML=`<button class="back">← 返回</button>
+      <div class="eyebrow">模擬加入</div><h2>「${esc(prof)}」比較接近哪一類？</h2>
+      <p class="lead">選一個最接近的產業類型，我們就能幫你找出合作夥伴。</p>
+      <div class="tags" style="margin-top:10px">${Object.entries(TYPES).map(([k,v])=>`<button class="tag pick" data-t="${k}">${esc(v.name)}</button>`).join("")}</div>`;
+    bind(); return {rels:[],chain:null};
+  }
+  const rels=relationsFor(types,null,null);
+  const wh=wantedHit(prof);
+  const chain=wh?wh.c.id:bestChain(types,rels);
+  rels.forEach(r=>{if(r.m.chain===chain) r.score+=1}); rels.sort((a,b)=>b.score-a.score);
+  const S=relSections(rels,"你");
+  const top=rels.filter(r=>!r.m.mentor).slice(0,3);
+  P.innerHTML=`
+    <button class="back">← 返回</button>
+    <div class="eyebrow">模擬加入結果</div>
+    <h2>${esc(you)}｜${esc(prof)}</h2>
+    <div class="tags">${types.map(t=>`<span class="tag red">${esc(tname(t))}</span>`).join("")}<span class="tag">建議加入：${chain}. ${esc(CH[chain].name)}</span></div>
+    ${conflict?`<div class="box warn"><p>長橋目前已有「${esc(conflict.p)}」席位（${esc(who(conflict))}）。BNI 一個專業一個席位，你可以用<b>更細分的專業</b>加入，例如不同產品線或不同客群，歡迎來例會和我們聊聊。</p></div>`
+      :wanted?`<div class="box red"><p>🎯 <b>長橋正在找你！</b>「${esc(wanted.w)}」是 ${wanted.c.id}. ${esc(wanted.c.name)}正在邀請的專業，這個席位目前還空著。</p></div>`:""}
+    <div class="box">
+      <div style="display:flex;align-items:center;gap:14px"><div class="big">${rels.length}</div><p>位夥伴加入後就能和你合作${top.length?`，建議先約 <b>${top.map(r=>esc(r.m.name)).join("、")}</b> 做 1 對 1`:""}。</p></div>
+      <div class="kpis"><div class="kpi up"><b>${S.up.length}</b><span>上游供應</span></div><div class="kpi down"><b>${S.down.length}</b><span>下游客戶</span></div><div class="kpi peer"><b>${S.peer.length}</b><span>同客群互推</span></div></div>
+    </div>
+    <div class="actions">
+      <button class="btn btn-red" id="copyRes">複製結果傳給邀請人</button>
+      ${CONFIG.lineUrl?`<a class="btn btn-line" href="${esc(CONFIG.lineUrl)}" target="_blank" rel="noopener">報名參加例會</a>`:""}
+    </div>
+    ${S.html||`<p class="empty">目前沒有直接相關的夥伴，試著換個說法描述你的專業，或在下方改選類型。</p>`}
+    <h3>判斷的類型不對？ <small>點選修正</small></h3>
+    <div class="tags">${Object.entries(TYPES).map(([k,v])=>`<button class="tag pick ${types.includes(k)?"on":""}" data-t="${k}">${esc(v.name)}</button>`).join("")}</div>
+    <h3>加入後會發生什麼</h3>
+    <ol class="steps"><li>每週例會用 60 秒介紹你的專業，讓 ${SEATED().length} 位夥伴都知道要幫你找什麼客戶。</li><li>和上面的夥伴約 1 對 1，互相了解彼此的理想客戶。</li><li>夥伴開始把客戶引薦給你，你也把客戶引薦給他們。</li></ol>`;
+  $("#copyRes").onclick=()=>{
+    const fmt=arr=>arr.slice(0,6).map(r=>`${r.m.name}（${r.m.p}）`).join("、")||"—";
+    const txt=`【長橋名人堂分會｜模擬加入】\n${you}｜${prof}\n建議加入：${chain}. ${CH[chain].name}\n可合作夥伴 ${rels.length} 位\n▲上游：${fmt(S.up)}\n▼下游：${fmt(S.down)}\n◆互推：${fmt(S.peer)}${/^https?:/.test(location.href)&&!location.href.includes('srcdoc')?'\n'+location.href:''}`;
+    navigator.clipboard?.writeText(txt).then(()=>toast("已複製，可以直接貼到 LINE"),()=>toast("無法複製，請手動截圖"));
+  };
+  bind();
+  return {rels,chain};
+}
+function showMember(id){
+  const m=MEMBERS.find(x=>x.id===id); if(!m) return showHome();
+  const rels=relationsFor(m.t,m.chain,m.id), S=relSections(rels,"他"), c=CH[m.chain];
+  P.innerHTML=`
+    <button class="back">← 返回</button>
+    <div class="eyebrow">${c.id}. ${esc(c.name)}</div>
+    <h2>${esc(m.p)}</h2>
+    <p style="font-size:17px;font-weight:700">${esc(who(m))}${m.mentor?` <span class="pill mentor">${esc(m.mentor)}</span>`:""}</p>
+    <div class="tags" style="margin-top:6px">${m.t.map(t=>`<span class="tag red">${esc(tname(t))}</span>`).join("")}</div>
+    <div class="kpis"><div class="kpi up"><b>${S.up.length}</b><span>上游供應</span></div><div class="kpi down"><b>${S.down.length}</b><span>下游客戶</span></div><div class="kpi peer"><b>${S.peer.length}</b><span>同客群互推</span></div></div>
+    ${S.html}`;
+  bind();
+}
+function showChain(id){
+  const c=CH[id]; if(!c) return showHome();
+  const ms=MEMBERS.filter(m=>m.chain===id);
+  P.innerHTML=`
+    <button class="back">← 返回</button>
+    <div class="eyebrow">產業服務鏈 ${c.id}</div>
+    <h2>${esc(c.name)}${c.sub?`<br><small style="font-size:15px;color:var(--ink3)">${esc(c.sub)}</small>`:""}</h2>
+    <p class="lead">${esc(c.desc)}</p>
+    <h3>夥伴 <small>${ms.length} 位</small></h3>
+    <ul class="list">${ms.map(m=>`<li data-m="${m.id}"><div><div class="nm">${esc(m.p)}</div><div class="meta">${esc(who(m))}</div></div>${m.mentor?`<span class="pill mentor">${esc(m.mentor)}</span>`:""}</li>`).join("")}</ul>
+    <h3>這條鏈正在邀請 <small>點選可模擬加入</small></h3>
+    <div class="tags">${c.wanted.map(w=>`<button class="tag pick" data-ex="${esc(w)}">＋ ${esc(w)}</button>`).join("")}</div>`;
+  bind();
+}
+function showSearch(q){
+  const res=search(q);
+  P.innerHTML=`<div class="eyebrow">搜尋會員</div><h2>「${esc(q)}」</h2>
+    ${res.length?`<ul class="list">${res.map(m=>`<li data-m="${m.id}"><div><div class="nm">${esc(m.p)}｜${esc(m.name)}</div><div class="meta">${m.chain}. ${esc(CH[m.chain].name)}</div></div></li>`).join("")}</ul>`
+      :`<p class="empty">分會目前沒有這個專業。</p><button class="btn btn-red" data-ex="${esc(q)}" style="margin-top:8px">模擬「${esc(q)}」加入長橋 →</button>`}`;
+  bind();
+}
+
+/* ---- 路由 ---- */
+let STATE={view:"home"},BACK=null;
+function go(st,{zoom:z=true}={}){
+  if(STATE.view!=="home" && STATE.view!==st.view) BACK=STATE; else if(st.view==="home") BACK=null;
+  STATE=st;
+  const guest=st.view==="guest";
+  if(guest){
+    drawMap(null); // 先清掉訪客點，取得關係後再放入
+    const res=showGuest(st);
+    drawMap(res.chain); if(res.chain) drawGuest(st.name||"你");
+    Object.assign(st,res);
+    if(z) resetView();
+  } else {
+    if(!gGuest.empty() || POS.has("guest")) drawMap(null);
+    if(st.view==="member"){showMember(st.id); if(z) resetView();}
+    else if(st.view==="chain"){showChain(st.id); if(z) focusOn(L[st.id].x,L[st.id].y,1.7);}
+    else if(st.view==="search"){showSearch(st.q); if(z) resetView();}
+    else {showHome(); if(z) resetView();}
+  }
+  paint(st);
+  const p=new URLSearchParams();
+  if(guest){p.set("join",st.prof); if(st.name)p.set("name",st.name);}
+  else if(st.view==="member"){const m=MEMBERS.find(x=>x.id===st.id); if(m)p.set("m",m.name);}
+  else if(st.view==="chain")p.set("c",st.id);
+  try{ history.replaceState(null,"",p.toString()?"#"+p.toString():location.pathname); }catch(e){ /* 預覽環境（iframe/srcdoc）不允許改網址，略過 */ }
+  if(window.innerWidth<=1040 && st.view!=="home") $("#aside").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("on"),1800)}
+
+/* ---- 啟動 ---- */
+function boot(){
+  $("#chapterName").textContent=CONFIG.chapter; $("#chapterTag").textContent=CONFIG.tagline;
+  if(CONFIG.siteUrl) $("#lnkSite").href=CONFIG.siteUrl; else $("#lnkSite").style.display="none";
+  if(CONFIG.lineUrl) $("#lnkLine").href=CONFIG.lineUrl; else $("#lnkLine").style.display="none";
+  const n=SEATED().length;
+  $("#stMembers").textContent=n; $("#stChains").textContent=CHAINS.length; $("#stMentors").textContent=MEMBERS.length-n;
+  $("#goalBar").style.width=Math.min(100,n/CONFIG.goal.target*100)+"%";
+  $("#goalTxt").textContent=`${n} / ${CONFIG.goal.target} 位創會目標`; $("#goalDate").textContent=`${CONFIG.goal.deadline} 前・${CONFIG.goal.note}`;
+  CONFIG.examples.forEach(e=>{const b=document.createElement("button");b.type="button";b.className="ex";b.textContent=e;
+    b.onclick=()=>{$("#gProf").value=e;simulate(e,$("#gName").value)};$("#examples").appendChild(b)});
+  layout(); drawMap();
+  const run=()=>simulate($("#gProf").value,$("#gName").value);
+  $("#simGo").onclick=run;
+  ["#gProf","#gName"].forEach(id=>$(id).addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();run();}}));
+  let tm;$("#mq").addEventListener("input",e=>{clearTimeout(tm);const q=e.target.value.trim();tm=setTimeout(()=>q?go({view:"search",q}):go({view:"home"}),200)});
+  $("#reset").onclick=()=>{$("#mq").value="";go({view:"home"})};
+  svg.on("click",e=>{if(e.target===svg.node()) go({view:"home"})});
+  let h; try{ h=new URLSearchParams(location.hash.slice(1)); }catch(e){ h=new URLSearchParams(); }
+  if(h.get("join")){ $("#gProf").value=h.get("join"); $("#gName").value=h.get("name")||""; simulate(h.get("join"),h.get("name")); }
+  else if(h.get("m")){const m=MEMBERS.find(x=>x.name===h.get("m")); m?go({view:"member",id:m.id}):go({view:"home"});}
+  else if(h.get("c")) go({view:"chain",id:+h.get("c")});
+  else go({view:"home"},{zoom:false});
+}
+boot();
+</script>
+</body>
+</html>
