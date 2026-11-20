@@ -157,6 +157,43 @@ footer p+p{margin-top:4px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 
+
+/* ---------- Honor ---------- */
+.honor{max-width:1360px;margin:0 auto;padding:0 24px 28px}
+.honorHead{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.honorHead h2{font-family:"Noto Serif TC",serif;font-size:26px}
+.honorHead p{color:var(--ink3);font-size:13px}
+.honorGrid{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:16px}
+.hcard{padding:18px 20px}
+.hcard h3{font-size:16px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.hcard .hint{font-size:12.5px;color:var(--ink3);margin-bottom:12px}
+.hcount:empty{display:none}
+.hcount{margin-left:auto;font-size:13px;font-weight:700;border-radius:999px;padding:1px 10px}
+.light{width:14px;height:14px;border-radius:50%;background:#1FA35B;box-shadow:0 0 0 4px #DDF3E6}
+.medal{font-size:20px;line-height:1}
+.people{display:flex;flex-wrap:wrap;gap:8px}
+.person-chip{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:999px;padding:4px 12px 4px 4px;background:#fff;font-size:14px}
+.person-chip[data-m]{cursor:pointer}.person-chip[data-m]:hover{border-color:var(--ink3)}
+.person-chip .av{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:900;font-size:13px;color:#fff;background:#1FA35B}
+.person-chip small{color:var(--ink3);font-size:12px}
+.gold .av{background:linear-gradient(135deg,#E8B93A,#B8860B)}
+.goldItem{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:12px;background:linear-gradient(135deg,#FFF8E1,#FBEFC9);border:1px solid #EFD98F;margin-bottom:8px}
+.goldItem[data-m]{cursor:pointer}
+.goldItem .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:900;color:#fff;background:linear-gradient(135deg,#E8B93A,#B8860B);flex:none}
+.goldItem b{display:block}
+.goldItem span{font-size:12.5px;color:#8A6417}
+.rank{list-style:none}
+.rank li{display:grid;grid-template-columns:28px 64px 1fr 44px;align-items:center;gap:8px;padding:5px 0;font-size:14px}
+.rank li[data-m]{cursor:pointer}
+.rank .no{font-weight:900;color:var(--ink3);text-align:center}
+.rank li:nth-child(1) .no{color:#B8860B}.rank li:nth-child(2) .no{color:#8A8B90}.rank li:nth-child(3) .no{color:#A0522D}
+.rank .bar{height:10px;border-radius:5px;background:#F1F1F3;overflow:hidden}
+.rank .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--red),#FF7A8F);border-radius:5px}
+.rank .v{font-weight:900;text-align:right}
+.hempty{color:var(--ink3);font-size:14px;padding:8px 0}
+@media (max-width:1040px){.honorGrid{grid-template-columns:1fr}}
+@media (max-width:640px){.honor{padding:0 14px 24px}}
+
 @media (max-width:1040px){
   main.wrap{grid-template-columns:1fr}
   aside{position:static;max-height:none;order:-1}
@@ -238,6 +275,21 @@ footer p+p{margin-top:4px}
   </section>
   <aside class="card" id="aside"><div class="panel" id="panel"></div></aside>
 </main>
+
+<section class="honor" id="honor">
+  <div class="honorHead">
+    <div><h2>長橋榮譽榜</h2><p id="honorAsOf"></p></div>
+    <p>每週出席、引薦、來賓與 1 對 1 都做到位，才拿得到綠燈。</p>
+  </div>
+  <div class="honorGrid">
+    <div class="card hcard"><h3><span class="light"></span>綠燈會員<span class="hcount" style="background:#DDF3E6;color:#137A42" id="greenN"></span></h3>
+      <div class="hint">BNI 會員表現報告達綠燈標準的夥伴</div><div class="people" id="greenList"></div></div>
+    <div class="card hcard"><h3><span class="medal">🥇</span>金質獎章<span class="hcount" style="background:#FBEFC9;color:#8A6417" id="goldN"></span></h3>
+      <div class="hint" id="goldHint"></div><div id="goldList"></div></div>
+    <div class="card hcard"><h3><span class="medal">🤝</span>邀約來賓入會榮譽榜</h3>
+      <div class="hint" id="sponsorHint"></div><ol class="rank" id="sponsorList"></ol></div>
+  </div>
+</section>
 
 <footer>
   <p>合作關係依各夥伴的產業類型與一般產業鏈推算，代表<b>可能的合作方向</b>，不代表實際交易。BNI 每個專業在分會中只保留一個席位。</p>
@@ -321,6 +373,25 @@ const KEYWORDS = [
 /* =====================================================================
    3. 服務鏈與夥伴（依 2026/11/19 團隊名單＋產業服務鏈合作藍圖）
    ===================================================================== */
+/* =====================================================================
+   榮譽榜 —— 每次更新改這裡
+   green：綠燈會員（填姓名）
+   gold：金質獎章（name 姓名、note 說明，例如「邀請 6 位入會」）
+   sponsors：邀約來賓成為會員人數
+   ===================================================================== */
+const HONORS = {
+  asOf: "2026/11/19",
+  green: ["袁敏禎"],
+  gold: [{name:"袁敏禎", note:"分會主席・成功邀請 6 位來賓入會"}],
+  goldRule: "成功邀請 6 位來賓入會的夥伴",
+  sponsorNote: "籌備期成功邀約來賓成為會員（12/11 授證晚宴上台表揚）",
+  sponsors: [
+    {name:"袁敏禎",count:6},{name:"鄭國信",count:4},{name:"王思予",count:3},
+    {name:"林美足",count:2},{name:"江懿哲",count:1},{name:"郭羽庭",count:1},
+    {name:"Ella",count:1},{name:"Eillen",count:1},{name:"陳政顯",count:1}
+  ]
+};
+
 const CHAINS = [
   {id:1, name:"包裝整合服務鏈", fit:["pack"], sub:"全球聯盒網", desc:"從貼紙、紙盒、瓶器到軟包材、紙袋，一次搞定品牌包裝。", wanted:["包裝企劃","包裝平面設計","人力銀行"]},
   {id:2, name:"健康養生服務鏈", fit:["health","beautyprod"], sub:"Well Link",  desc:"漢方、育髮、健康食品，照顧身體由內而外。", wanted:["連鎖藥局","產後護理／月子中心","禮贈品業者"]},
@@ -342,7 +413,7 @@ const MEMBERS_BUILTIN = [
   {no:1,  name:"郭羽庭", p:"漢方食品",       chain:2, t:["food","health"]},
   {no:4,  name:"唐國蘭", p:"VIVFOL 美髮育髮", chain:2, t:["beautyprod","beautysvc"]},
   {no:26, name:"徐晉棠", p:"精品堅果",       chain:2, t:["food"]},
-  {no:11, name:"袁敏禎", p:"人設短影行銷",   chain:3, t:["mkt"]},
+  {no:11, name:"袁敏禎", p:"人設短影行銷",   chain:3, t:["mkt"], role:"主席", honors:["🟢 綠燈會員","🥇 金質獎章"]},
   {no:9,  name:"陳美蓉", p:"蛋捲工廠",       chain:3, t:["food"]},
   {no:22, name:"吳得維", p:"連鎖炸雞",       chain:3, t:["restaurant"]},
   {no:13, name:"林美足", p:"西服訂製",       chain:4, t:["luxury"]},
@@ -612,7 +683,8 @@ function showMember(id){
     <button class="back">← 返回</button>
     <div class="eyebrow">${c.id}. ${esc(c.name)}</div>
     <h2>${esc(m.p)}</h2>
-    <p style="font-size:17px;font-weight:700">${esc(who(m))}${m.mentor?` <span class="pill mentor">${esc(m.mentor)}</span>`:""}</p>
+    <p style="font-size:17px;font-weight:700">${esc(who(m))}${m.mentor?` <span class="pill mentor">${esc(m.mentor)}</span>`:""}${m.role?` <span class="pill both">${esc(m.role)}</span>`:""}</p>
+    ${m.honors?`<div class="tags" style="margin-top:6px">${m.honors.map(h=>`<span class="tag" style="background:#FBEFC9;color:#8A6417;font-weight:700">${esc(h)}</span>`).join("")}</div>`:""}
     <div class="tags" style="margin-top:6px">${m.t.map(t=>`<span class="tag red">${esc(tname(t))}</span>`).join("")}</div>
     <div class="kpis"><div class="kpi up"><b>${S.up.length}</b><span>上游供應</span></div><div class="kpi down"><b>${S.down.length}</b><span>下游客戶</span></div><div class="kpi peer"><b>${S.peer.length}</b><span>同客群互推</span></div></div>
     ${S.html}`;
@@ -669,6 +741,24 @@ function go(st,{zoom:z=true}={}){
 }
 function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("on"),1800)}
 
+
+/* ---- 榮譽榜 ---- */
+function renderHonor(){
+  const H=HONORS, byName=n=>MEMBERS.find(m=>m.name===n);
+  const attr=n=>{const m=byName(n);return m?` data-m="${m.id}"`:""};
+  const sub=n=>{const m=byName(n);return m?m.p:""};
+  $("#honorAsOf").textContent=H.asOf?`資料更新：${H.asOf}`:"";
+  $("#greenN").textContent=H.green.length?`${H.green.length} 位`:"";
+  $("#greenList").innerHTML=H.green.length?H.green.map(n=>`<span class="person-chip"${attr(n)}><span class="av">${esc(n.slice(0,1))}</span>${esc(n)}${sub(n)?` <small>${esc(sub(n))}</small>`:""}</span>`).join(""):`<p class="hempty">名單整理中，敬請期待。</p>`;
+  $("#goldHint").textContent=H.goldRule;
+  $("#goldN").textContent=H.gold.length?`${H.gold.length} 位`:"";
+  $("#goldList").innerHTML=H.gold.length?H.gold.map(g=>`<div class="goldItem"${attr(g.name)}><span class="av">${esc(g.name.slice(0,1))}</span><div><b>${esc(g.name)}${sub(g.name)?`｜${esc(sub(g.name))}`:""}</b>${g.note?`<span>${esc(g.note)}</span>`:""}</div></div>`).join(""):`<p class="hempty">第一面金質獎章，誰會先拿下？</p>`;
+  const sp=[...H.sponsors].sort((a,b)=>b.count-a.count), max=Math.max(1,...sp.map(x=>x.count));
+  $("#sponsorHint").textContent=H.sponsorNote;
+  $("#sponsorList").innerHTML=sp.map((x,i)=>`<li${attr(x.name)}><span class="no">${i+1}</span><span class="nm">${esc(x.name)}</span><span class="bar"><i style="width:${x.count/max*100}%"></i></span><span class="v">${x.count} 位</span></li>`).join("");
+  document.querySelectorAll("#honor [data-m]").forEach(el=>el.onclick=()=>{go({view:"member",id:el.dataset.m});document.querySelector("main").scrollIntoView({behavior:"smooth"});});
+}
+
 /* ---- 啟動 ---- */
 function boot(){
   $("#chapterName").textContent=CONFIG.chapter; $("#chapterTag").textContent=CONFIG.tagline;
@@ -680,7 +770,7 @@ function boot(){
   $("#goalTxt").textContent=`${n} / ${CONFIG.goal.target} 位創會目標`; $("#goalDate").textContent=`${CONFIG.goal.deadline} 前・${CONFIG.goal.note}`;
   CONFIG.examples.forEach(e=>{const b=document.createElement("button");b.type="button";b.className="ex";b.textContent=e;
     b.onclick=()=>{$("#gProf").value=e;simulate(e,$("#gName").value)};$("#examples").appendChild(b)});
-  layout(); drawMap();
+  layout(); drawMap(); renderHonor();
   const run=()=>simulate($("#gProf").value,$("#gName").value);
   $("#simGo").onclick=run;
   ["#gProf","#gName"].forEach(id=>$(id).addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.isComposing){e.preventDefault();run();}}));
