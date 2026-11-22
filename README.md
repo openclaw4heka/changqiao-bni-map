@@ -7,3 +7,6 @@
 - `CHAINS`：8 條服務鏈與「合作產業來賓需求」（wanted）
 - `MEMBERS_BUILTIN`：會員與輔導團隊（no 編號、p 專業、chain 服務鏈、t 產業類型）
 - `TYPES` / `PEERS` / `KEYWORDS`：上下游推算規則與來賓輸入的關鍵字對照
+
+## 抽獎輪盤 `/wheel`
+`wheel.html`：付出者收穫抽獎輪盤。名單、獎品與紀錄存在操作那台電腦的瀏覽器；快速加入名單在檔案開頭的 `ROSTER`。
