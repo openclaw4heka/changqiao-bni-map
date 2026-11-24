@@ -8,13 +8,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
 <style>
-:root{--red:#C8102E;--red-d:#9E0B23;--red-soft:#FCE8EB;--ink:#1D1D1F;--ink2:#55565B;--ink3:#8A8B90;--line:#E4E4E7;--bg:#F6F5F3;--gold:#C9962B;--gold-soft:#FBF3E0;--green:#1FA35B}
+:root{--red:#C8102E;--red-d:#9E0B23;--red-soft:#FCE8EB;--ink:#1D1D1F;--ink2:#55565B;--ink3:#8A8B90;--line:#E4E4E7;--bg:#F6F5F3;--gold:#C9962B;--gold-soft:#FBF3E0;--green:#1FA35B;
+  --A:#C8102E;--A-soft:#FCE8EB;--B:#2C6BD6;--B-soft:#E7F0FD}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{background:var(--bg);color:var(--ink);font-family:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
 button{font:inherit;cursor:pointer}
-input,textarea{font:inherit}
+input,textarea,select{font:inherit}
 header{background:linear-gradient(135deg,#1D1D1F,#2A2A2E 60%,#4A0F1B);color:#fff}
-.hwrap{max-width:1440px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap}
+.hwrap{max-width:1480px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap}
 .brand{display:flex;align-items:center;gap:12px}
 .badge{background:var(--red);font-weight:900;letter-spacing:.08em;padding:5px 11px;border-radius:8px;font-size:17px}
 .brand h1{font-family:"Noto Serif TC",serif;font-size:24px;line-height:1.2}
@@ -24,16 +25,19 @@ header{background:linear-gradient(135deg,#1D1D1F,#2A2A2E 60%,#4A0F1B);color:#fff
 .hbtn:hover{background:rgba(255,255,255,.1)}
 .hbtn.on{background:#fff;color:var(--ink)}
 
-main{max-width:1440px;margin:0 auto;padding:20px 24px 40px;display:grid;grid-template-columns:minmax(0,1fr) 440px;gap:20px}
+main{max-width:1480px;margin:0 auto;padding:20px 24px 40px;display:grid;grid-template-columns:minmax(0,1fr) 460px;gap:20px}
 body.host main{grid-template-columns:1fr}
 body.host .setup{display:none}
 .card{background:#fff;border:1px solid var(--line);border-radius:16px}
 
 /* stage */
-.stage{padding:20px;display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:center}
-body.host .stage{grid-template-columns:minmax(0,1fr) 380px}
-.wheelBox{position:relative;width:100%;max-width:680px;margin:0 auto;aspect-ratio:1}
-body.host .wheelBox{max-width:min(760px,calc(100vh - 140px))}
+.stage{padding:20px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:center}
+body.host .stage{grid-template-columns:minmax(0,1fr) 420px}
+.poolTag{display:flex;justify-content:center;margin-bottom:10px}
+.poolTag span{font-weight:900;font-size:20px;color:#fff;border-radius:999px;padding:6px 22px;background:var(--A)}
+.poolTag span.B{background:var(--B)}
+.wheelBox{position:relative;width:100%;max-width:660px;margin:0 auto;aspect-ratio:1}
+body.host .wheelBox{max-width:min(720px,calc(100vh - 190px))}
 #wheel{width:100%;height:100%;display:block;filter:drop-shadow(0 12px 30px rgba(0,0,0,.18))}
 .pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:22px solid transparent;border-right:22px solid transparent;border-top:44px solid var(--ink);filter:drop-shadow(0 3px 4px rgba(0,0,0,.3));z-index:2}
 .pointer:after{content:"";position:absolute;left:-9px;top:-40px;width:18px;height:18px;border-radius:50%;background:var(--red)}
@@ -42,28 +46,28 @@ body.host .wheelBox{max-width:min(760px,calc(100vh - 140px))}
 .hub span{display:block;color:var(--red);font-size:clamp(9px,1vw,12px);font-weight:700}
 .emptyWheel{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:var(--ink3);font-size:15px;padding:30%}
 
-.side{display:flex;flex-direction:column;gap:12px}
-.prize{border:2px solid var(--line);border-radius:14px;padding:14px 16px;position:relative;transition:.2s}
-.prize.active{border-color:var(--red);box-shadow:0 0 0 4px var(--red-soft)}
-.prize.done{border-color:var(--gold);background:var(--gold-soft)}
-.prize .lbl{font-size:12px;font-weight:900;color:var(--red);letter-spacing:.08em}
-.prize.done .lbl{color:#8A6417}
-.prize .gift{font-size:18px;font-weight:900;margin-top:2px}
-.prize .by{font-size:13px;color:var(--ink2)}
-.prize .win{margin-top:10px;padding-top:10px;border-top:1px dashed #E3CF96;font-size:13px;color:#8A6417}
-.prize .win b{display:block;font-size:26px;color:var(--ink);line-height:1.2}
-.prize .absent{font-size:12px;color:var(--ink3);margin-top:4px}
-.spin{background:var(--red);color:#fff;border:0;border-radius:14px;padding:18px;font-size:22px;font-weight:900;letter-spacing:.04em;box-shadow:0 6px 18px rgba(200,16,46,.35);transition:.15s}
-.spin:hover{background:var(--red-d)}
+.side{display:flex;flex-direction:column;gap:10px}
+.grpTitle{font-size:12.5px;font-weight:900;letter-spacing:.06em;display:flex;align-items:center;gap:6px;margin-top:4px}
+.grpTitle i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.prize{border:2px solid var(--line);border-radius:12px;padding:9px 12px;position:relative;transition:.2s;cursor:pointer;background:#fff;text-align:left;width:100%;margin-top:6px}
+.prize:hover{border-color:var(--ink3)}
+.prize.active.A{border-color:var(--A);box-shadow:0 0 0 4px var(--A-soft)}
+.prize.active.B{border-color:var(--B);box-shadow:0 0 0 4px var(--B-soft)}
+.prize.done{border-color:var(--gold);background:var(--gold-soft);cursor:default}
+.prize .top{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--ink3)}
+.prize .gift{font-size:16px;font-weight:900;margin-top:1px;line-height:1.35}
+.prize .win{font-size:13px;color:#8A6417;margin-top:4px}
+.prize .win b{font-size:22px;color:var(--ink);margin-left:4px}
+.prize .absent{font-size:12px;color:var(--ink3);margin-top:2px}
+.spin{background:var(--red);color:#fff;border:0;border-radius:14px;padding:16px;font-size:21px;font-weight:900;letter-spacing:.03em;box-shadow:0 6px 18px rgba(200,16,46,.35);transition:.15s}
+.spin.B{background:var(--B);box-shadow:0 6px 18px rgba(44,107,214,.35)}
 .spin:disabled{background:#BDBDC2;box-shadow:none;cursor:not-allowed}
 .spin small{display:block;font-size:12px;font-weight:500;opacity:.85;letter-spacing:0}
 .mini{display:flex;gap:8px}
-.ghost{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px;font-size:13.5px;color:var(--ink2);font-weight:700}
+.ghost{flex:1;border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px;font-size:13.5px;color:var(--ink2);font-weight:700}
 .ghost:hover{border-color:var(--ink3)}
-.slogan{text-align:center;font-family:"Noto Serif TC",serif;font-weight:900;color:var(--red);font-size:18px}
-.stat{display:flex;justify-content:space-around;text-align:center;background:#FAFAF9;border-radius:12px;padding:10px}
-.stat b{display:block;font-size:26px;font-weight:900;line-height:1.1}
-.stat span{font-size:12px;color:var(--ink3)}
+.modeNote{text-align:center;font-size:12.5px;color:var(--ink3)}
+.slogan{text-align:center;font-family:"Noto Serif TC",serif;font-weight:900;color:var(--red);font-size:17px}
 
 /* setup */
 .setup{display:flex;flex-direction:column;gap:16px}
@@ -71,17 +75,30 @@ body.host .wheelBox{max-width:min(760px,calc(100vh - 140px))}
 .sec h2{font-size:16px;display:flex;align-items:center;gap:8px;margin-bottom:10px}
 .sec h2 .n{width:24px;height:24px;border-radius:50%;background:var(--ink);color:#fff;font-size:13px;display:grid;place-items:center;flex:none}
 .sec h2 small{margin-left:auto;font-weight:400;color:var(--ink3);font-size:12px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
 .f label{display:block;font-size:12px;color:var(--ink3);margin-bottom:3px}
-.f input,textarea{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:8px 10px;outline:0;font-size:14.5px}
+.f input,textarea{width:100%;border:1.5px solid var(--line);border-radius:9px;padding:7px 10px;outline:0;font-size:14.5px;background:#fff}
 .f input:focus,textarea:focus{border-color:var(--red)}
-textarea{min-height:120px;resize:vertical;font-family:inherit;line-height:1.5}
+.presenter{border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px;display:grid;gap:6px}
+.presenter .f.A input{border-left:4px solid var(--A)}
+.presenter .f.B input{border-left:4px solid var(--B)}
+textarea{min-height:110px;resize:vertical;font-family:inherit;line-height:1.5}
 .hint{font-size:12.5px;color:var(--ink3);margin-top:6px}
 .btnrow{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
-.btn{border:0;border-radius:9px;padding:8px 14px;font-weight:700;font-size:13.5px}
+.btn{border:0;border-radius:9px;padding:7px 14px;font-weight:700;font-size:13.5px}
 .btn.red{background:var(--red);color:#fff}
 .btn.out{background:#fff;border:1px solid var(--line);color:var(--ink2)}
-.chips{display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow:auto;padding:2px}
+.modes{display:grid;gap:6px}
+.mode{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:8px 10px;cursor:pointer}
+.mode.on{border-color:var(--ink);background:#FAFAF9}
+.mode input{margin-top:4px;accent-color:var(--red)}
+.mode b{display:block;font-size:14px}
+.mode span{font-size:12.5px;color:var(--ink3)}
+.tabs{display:flex;gap:6px;margin-bottom:10px}
+.tab{flex:1;border:1.5px solid var(--line);background:#fff;border-radius:10px;padding:8px;font-weight:900;font-size:14px;color:var(--ink2)}
+.tab.on.A{border-color:var(--A);background:var(--A-soft);color:var(--A)}
+.tab.on.B{border-color:var(--B);background:var(--B-soft);color:var(--B)}
+.tab small{font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:6px;max-height:140px;overflow:auto;padding:2px}
 .chip{border:1px solid var(--line);background:#FAFAF9;border-radius:999px;padding:2px 10px;font-size:13px;color:var(--ink2)}
 .chip:hover{border-color:var(--red);color:var(--red)}
 .chips.editing .chip{background:#fff;border-style:dashed}
@@ -89,36 +106,38 @@ textarea{min-height:120px;resize:vertical;font-family:inherit;line-height:1.5}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th{font-size:12px;color:var(--ink3);font-weight:500;text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
 td{padding:5px 6px;border-bottom:1px solid #F2F2F3;vertical-align:middle}
-td.c{text-align:center}
-.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:0}
+td.c,th.c{text-align:center}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px}
 .qty{display:inline-flex;align-items:center;gap:4px}
 .qty button{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:#fff;font-weight:900;line-height:1;color:var(--ink2)}
 .qty b{min-width:22px;text-align:center}
 .del{border:0;background:none;color:var(--ink3);font-size:16px}
 .del:hover{color:var(--red)}
-tr.absent td{opacity:.4;text-decoration:line-through}
+tr.out td{opacity:.45}
+tr.out td:first-child{text-decoration:line-through}
 .pct{font-size:12px;color:var(--ink3)}
+.eff{font-size:12px;color:#8A6417;font-weight:700}
 .log{font-size:13px;color:var(--ink2);white-space:pre-wrap;background:#FAFAF9;border-radius:10px;padding:10px;max-height:160px;overflow:auto}
 
 /* modal */
 .modal{position:fixed;inset:0;background:rgba(20,20,22,.72);display:none;place-items:center;z-index:50;padding:20px}
 .modal.on{display:grid}
-.mbox{background:#fff;border-radius:22px;padding:32px 36px;max-width:620px;width:100%;text-align:center;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
+.mbox{background:#fff;border-radius:22px;padding:30px 34px;max-width:640px;width:100%;text-align:center;animation:pop .35s cubic-bezier(.2,1.4,.4,1)}
 @keyframes pop{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
-.mbox .k{color:var(--red);font-weight:900;letter-spacing:.1em;font-size:14px}
+.mbox .k{font-weight:900;letter-spacing:.08em;font-size:14px;color:var(--A)}
+.mbox .k.B{color:var(--B)}
 .mbox .who{font-family:"Noto Serif TC",serif;font-size:clamp(44px,8vw,76px);font-weight:900;line-height:1.15;margin:8px 0}
 .mbox .what{font-size:18px;color:var(--ink2)}
 .mbox .what b{color:var(--ink)}
-.mbox .rule{margin-top:16px;font-size:13.5px;color:var(--ink3);background:#FAFAF9;border-radius:10px;padding:8px}
-.mbtns{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.mbox .rule{margin-top:14px;font-size:13.5px;color:var(--ink3);background:#FAFAF9;border-radius:10px;padding:8px}
+.mbtns{display:flex;gap:10px;justify-content:center;margin-top:16px;flex-wrap:wrap}
 .mbtns button{border:0;border-radius:12px;padding:12px 22px;font-weight:900;font-size:16px}
 .ok{background:var(--green);color:#fff}
 .skip{background:#F1F1F3;color:var(--ink2)}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(30px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;transition:.25s;pointer-events:none;z-index:60}
 .toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
 canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:55}
-
-@media (max-width:1100px){main{grid-template-columns:1fr}.stage,body.host .stage{grid-template-columns:1fr}}
+@media (max-width:1150px){main{grid-template-columns:1fr}.stage,body.host .stage{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -135,17 +154,19 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 
 <main>
   <section class="card stage">
-    <div class="wheelBox" id="wheelBox">
-      <div class="pointer"></div>
-      <canvas id="wheel" width="1200" height="1200" aria-label="抽獎輪盤"></canvas>
-      <div class="hub"><div><b id="hubTxt">付出者<br>收穫</b><span id="hubSub">Givers Gain</span></div></div>
-      <div class="emptyWheel" id="emptyWheel">在右側貼上本週引薦名單，輪盤就會出現</div>
+    <div>
+      <div class="poolTag"><span id="poolTag">引薦單池</span></div>
+      <div class="wheelBox">
+        <div class="pointer"></div>
+        <canvas id="wheel" width="1200" height="1200" aria-label="抽獎輪盤"></canvas>
+        <div class="hub"><div><b id="hubTxt">付出者<br>收穫</b><span>Givers Gain</span></div></div>
+        <div class="emptyWheel" id="emptyWheel"></div>
+      </div>
     </div>
     <div class="side">
-      <div class="stat"><div><b id="sPeople">0</b><span>位會員</span></div><div><b id="sTickets">0</b><span>張引薦單</span></div><div><b id="sWeek">—</b><span>例會日期</span></div></div>
-      <div class="prize" id="prize1"></div>
-      <div class="prize" id="prize2"></div>
+      <div id="prizes"></div>
       <button class="spin" id="spinBtn" type="button"></button>
+      <div class="modeNote" id="modeNote"></div>
       <div class="mini">
         <button class="ghost" id="copyBtn" type="button">複製得獎公告</button>
         <button class="ghost" id="resetDraw" type="button">重新開始抽獎</button>
@@ -156,32 +177,45 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 
   <aside class="setup">
     <section class="card sec">
-      <h2><span class="n">1</span>本週例會與獎品</h2>
-      <div class="row"><div class="f"><label for="week">例會日期</label><input id="week" type="date"></div><div></div></div>
-      <div class="row"><div class="f"><label for="sp1">第 1 位五分鐘簡報主講者</label><input id="sp1" placeholder="主講者姓名"></div><div class="f"><label for="pz1">提供的獎品</label><input id="pz1" placeholder="例如：精品堅果禮盒"></div></div>
-      <div class="row"><div class="f"><label for="sp2">第 2 位五分鐘簡報主講者</label><input id="sp2" placeholder="主講者姓名"></div><div class="f"><label for="pz2">提供的獎品</label><input id="pz2" placeholder="例如：品牌設計諮詢一次"></div></div>
+      <h2><span class="n">1</span>本週例會與獎品<small>每位主講者提供兩份獎品</small></h2>
+      <div class="f"><label for="week">例會日期</label><input id="week" type="date"></div>
+      <div id="presenterForm"></div>
     </section>
 
     <section class="card sec">
-      <h2><span class="n">2</span>匯入本週引薦名單<small>副主席從 BNI Connect 整理</small></h2>
-      <textarea id="paste" placeholder="一行一位：姓名 張數&#10;袁敏禎 3&#10;鄭國信 2&#10;王思予 1&#10;&#10;也可直接從 Excel 複製兩欄貼上；同一個名字出現多次會自動加總（一列一張引薦單也可以）"></textarea>
-      <div class="btnrow"><button class="btn red" id="importReplace" type="button">取代名單</button><button class="btn out" id="importAdd" type="button">加入名單</button><button class="btn out" id="clearList" type="button">清空</button></div>
-      <div class="hint" style="display:flex;justify-content:space-between;align-items:center">快速加入（點一下＋1 張）：<button class="btn out" id="rosterEdit" type="button" style="padding:3px 10px;font-size:12.5px">✏️ 增減會員</button></div>
+      <h2><span class="n">2</span>中獎後的機率規則</h2>
+      <div class="modes">
+        <label class="mode"><input type="radio" name="mode" value="remove"><div><b>抽中即除名</b><span>中獎後從該池移除，同一池不會再中獎</span></div></label>
+        <label class="mode"><input type="radio" name="mode" value="half"><div><b>抽中機率減半</b><span>中獎後在該池的機會變成一半，仍可能再中</span></div></label>
+        <label class="mode"><input type="radio" name="mode" value="keep"><div><b>機率不變</b><span>原規則：中獎不移除，也不改變機率</span></div></label>
+      </div>
+      <div class="hint">規則只影響「同一池」，兩個池子分開計算。抽獎中途切換，會依新規則重新計算剩下的機率。</div>
+    </section>
+
+    <section class="card sec">
+      <h2><span class="n">3</span>匯入本週名單<small>副主席從 BNI Connect 整理</small></h2>
+      <div class="tabs">
+        <button class="tab A" data-tab="A" type="button">引薦單池<br><small id="tabA"></small></button>
+        <button class="tab B" data-tab="B" type="button">帶來賓池<br><small id="tabB"></small></button>
+      </div>
+      <textarea id="paste"></textarea>
+      <div class="btnrow"><button class="btn red" id="importReplace" type="button">取代名單</button><button class="btn out" id="importAdd" type="button">加入名單</button><button class="btn out" id="clearList" type="button">清空這一池</button></div>
+      <div class="hint" style="display:flex;justify-content:space-between;align-items:center">快速加入（點一下＋1）：<button class="btn out" id="rosterEdit" type="button" style="padding:3px 10px;font-size:12.5px">✏️ 增減會員</button></div>
       <div class="chips" id="roster"></div>
       <div id="rosterTools" hidden style="margin-top:8px">
         <div style="display:flex;gap:6px"><div class="f" style="flex:1"><input id="rosterNew" placeholder="新會員姓名，按 Enter 加入"></div><button class="btn red" id="rosterAdd" type="button">加入</button></div>
-        <div class="hint">編輯中：點會員名字旁的 × 即可移除。名單存在這台電腦。<button class="btn out" id="rosterReset" type="button" style="padding:2px 8px;font-size:12px;margin-left:4px">恢復預設</button></div>
+        <div class="hint">編輯中：點會員名字即可移除。名單存在這台電腦。<button class="btn out" id="rosterReset" type="button" style="padding:2px 8px;font-size:12px;margin-left:4px">恢復預設</button></div>
       </div>
     </section>
 
     <section class="card sec">
-      <h2><span class="n">3</span>抽獎名單與機率<small id="totTxt"></small></h2>
-      <table><thead><tr><th>會員</th><th class="c">引薦單</th><th class="c">機率</th><th></th></tr></thead><tbody id="tbl"></tbody></table>
-      <div class="hint">每張引薦單＝一次抽獎機會；第一輪得獎者不移除，第二輪機率不變。劃線者為本週棄權（唱名三次未回應）。</div>
+      <h2><span class="n">4</span><span id="tblTitle">抽獎名單與機率</span><small id="totTxt"></small></h2>
+      <table><thead><tr><th>會員</th><th class="c" id="thCount">張數</th><th class="c">目前機會</th><th class="c">機率</th><th></th></tr></thead><tbody id="tbl"></tbody></table>
+      <div class="hint">劃線者：已除名或本週棄權（唱名三次未回應）。</div>
     </section>
 
     <section class="card sec">
-      <h2><span class="n">4</span>抽獎紀錄<small>存在這台電腦</small></h2>
+      <h2><span class="n">5</span>抽獎紀錄<small>存在這台電腦</small></h2>
       <div class="log" id="log">尚無紀錄</div>
       <div class="btnrow"><button class="btn out" id="copyLog" type="button">複製全部紀錄</button><button class="btn out" id="clearLog" type="button">清除紀錄</button></div>
     </section>
@@ -190,64 +224,89 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 
 <div class="modal" id="modal" role="dialog" aria-modal="true">
   <div class="mbox">
-    <div class="k" id="mRound">第 1 份獎品得主</div>
+    <div class="k" id="mRound"></div>
     <div class="who" id="mWho"></div>
     <div class="what" id="mWhat"></div>
     <div class="rule">請開鏡頭並出聲確認！唱名三次未回應視同不在，棄權改抽下一位。</div>
-    <div class="mbtns"><button class="ok" id="mOk" type="button">✅ 在線確認得獎</button><button class="skip" id="mSkip" type="button">棄權，重抽本份獎品</button></div>
+    <div class="mbtns"><button class="ok" id="mOk" type="button">✅ 在線確認得獎</button><button class="skip" id="mSkip" type="button">棄權，重抽這份獎品</button></div>
   </div>
 </div>
 <canvas id="fx"></canvas>
 <div class="toast" id="toast"></div>
 
 <script>
-/* 快速加入用的會員名單（與分會網站一致，可自行增減） */
+/* 快速加入用的會員名單（可在頁面上「增減會員」） */
 const ROSTER_DEFAULT=["郭羽庭","唐國蘭","鄭國信","師嘉孝","段承韻","陳美蓉","𡩋振福","袁敏禎","王思予","林美足","鄭學謙","田小燕","林小蕎","江懿哲","李雅雯","林鈞芃","林筱錡","吳得維","黃巧茵","張筱博","郭盈甫","徐晉棠","楊小青","陳沛羽","嚴麒祥","莊彥瑄","蘇豊文","李宥綸","李惠珠","廖毓靖","周信廷","陳政顯","黃俊儒"];
-const COLORS=["#C8102E","#1D1D1F","#C9962B","#6B6B72","#E2475E","#3A3A40","#B5832A","#9E0B23","#8E8E95","#D9A441"];
+
+const POOLS={A:{name:"引薦單池",unit:"張",what:"引薦單",colors:["#C8102E","#1D1D1F","#C9962B","#6B6B72","#E2475E","#3A3A40","#B5832A","#9E0B23","#8E8E95","#D9A441"]},
+             B:{name:"帶來賓池",unit:"位",what:"帶來賓",colors:["#2C6BD6","#1D1D1F","#C9962B","#5B8DEF","#3A3A40","#1E4E9E","#8E8E95","#D9A441","#6B6B72","#7FA7F0"]}};
+// 抽獎順序：先抽引薦單池兩份，再抽帶來賓池兩份（也可以在右側直接點選要抽哪一份）
+const SLOTS=[{p:0,pool:"A"},{p:1,pool:"A"},{p:0,pool:"B"},{p:1,pool:"B"}];
+const MODES={remove:"抽中即除名",half:"抽中機率減半",keep:"機率不變"};
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(2).replace(/0+$/,"").replace(/\.$/,"");
 
 /* ---------- 狀態 ---------- */
-let S=store.get("cq_wheel_state",null)||{week:"",sp1:"",pz1:"",sp2:"",pz2:"",list:[],winners:[null,null],absent:[[],[]],round:0};
-let LOG=store.get("cq_wheel_log",[]);
-let rotation=0, spinning=false, sound=true;
-const save=()=>store.set("cq_wheel_state",S);
-const absentAll=()=>[...new Set([...S.absent[0],...S.absent[1]])];
-const pool=()=>S.list.filter(p=>p.n>0 && !absentAll().includes(p.name)); // 棄權者當週不再參加
+function blank(){return {week:"",presenters:[{name:"",A:"",B:""},{name:"",A:"",B:""}],lists:{A:[],B:[]},wins:[null,null,null,null],absent:[],skipped:[[],[],[],[]],cur:0,mode:"remove",tab:"A"};}
+let S=store.get("cq_wheel_v2",null);
+if(!S){ S=blank(); const old=store.get("cq_wheel_state",null);
+  if(old){ S.week=old.week||""; S.lists.A=(old.list||[]).map(x=>({name:x.name,n:x.n}));
+    S.presenters[0]={name:old.sp1||"",A:old.pz1||"",B:""}; S.presenters[1]={name:old.sp2||"",A:old.pz2||"",B:""}; } }
+let LOG=store.get("cq_wheel_log2",null)||store.get("cq_wheel_log",[]).map(x=>({week:x.week,text:x.text}));
+let rotation=0, spinning=false, sound=true, pending=null;
+const save=()=>store.set("cq_wheel_v2",S);
+const slot=i=>SLOTS[i];
+const done=i=>!!S.wins[i];
+const allDone=()=>S.wins.every(Boolean);
+const curPool=()=>slot(S.cur)?.pool||"A";
 const total=arr=>arr.reduce((a,p)=>a+p.n,0);
+
+/* 目前機會：依原始數量、同池已確認的得獎（依序）、規則與棄權計算 */
+function effective(pool){
+  const m={}; S.lists[pool].forEach(p=>m[p.name]=p.n);
+  SLOTS.forEach((s,i)=>{ const w=S.wins[i]; if(s.pool!==pool||!w||!(w in m)) return;
+    if(S.mode==="remove") m[w]=0; else if(S.mode==="half") m[w]=m[w]/2; });
+  S.absent.forEach(n=>{ if(n in m) m[n]=0; });
+  return m;
+}
 
 /* ---------- 名單 ---------- */
 function parse(text){
   const out={};
   text.split(/\r?\n/).forEach(line=>{
     line=line.trim(); if(!line) return;
-    const m=line.match(/^(.+?)[\s,，、:：|｜\t]+(\d+)\s*(張)?$/);
+    const m=line.match(/^(.+?)[\s,，、:：|｜\t]+(\d+)\s*(張|位|人)?$/);
     let name=(m?m[1]:line).replace(/^\d+\s*號\s*/,"").replace(/[,，、:：|｜\t]+$/,"").trim();
     const n=m?parseInt(m[2],10):1;
-    if(!name||/姓名|張數|引薦單|會員名稱|^name\b|^會員$/i.test(name)) return; // 跳過標題列
+    if(!name||/姓名|張數|引薦單|來賓數|會員名稱|^name\b|^會員$/i.test(name)) return; // 跳過標題列
     out[name]=(out[name]||0)+n;
   });
   return Object.entries(out).map(([name,n])=>({name,n}));
 }
-function merge(items,replace){
-  if(replace) S.list=[];
-  items.forEach(it=>{const f=S.list.find(p=>p.name===it.name); f?f.n+=it.n:S.list.push({...it});});
-  S.list=S.list.filter(p=>p.n>0); save(); renderAll();
+function merge(pool,items,replace){
+  const L=S.lists; if(replace) L[pool]=[];
+  items.forEach(it=>{const f=L[pool].find(p=>p.name===it.name); f?f.n+=it.n:L[pool].push({...it});});
+  L[pool]=L[pool].filter(p=>p.n>0); save(); renderAll();
 }
 
-/* ---------- 輪盤繪製 ---------- */
+/* ---------- 輪盤 ---------- */
 const cv=$("#wheel"), ctx=cv.getContext("2d"), R=cv.width/2;
 let SEG=[];
 function buildSegments(){
-  const P=pool(), T=total(P); let a=0;
-  SEG=P.map((p,i)=>{const sweep=p.n/T*Math.PI*2; const s={...p,start:a,end:a+sweep,color:COLORS[i%COLORS.length]}; if(P.length>1&&i===P.length-1&&s.color===SEG?.[0]?.color) s.color=COLORS[(i+3)%COLORS.length]; a+=sweep; return s;});
-  if(SEG.length>1 && SEG[SEG.length-1].color===SEG[0].color) SEG[SEG.length-1].color=COLORS[(SEG.length+2)%COLORS.length];
+  const pool=curPool(), eff=effective(pool);
+  const P=S.lists[pool].map(p=>({name:p.name,n:eff[p.name]})).filter(p=>p.n>0);
+  const T=P.reduce((a,p)=>a+p.n,0), C=POOLS[pool].colors; let a=0;
+  SEG=P.map((p,i)=>{const sweep=p.n/T*Math.PI*2; const s={...p,start:a,end:a+sweep,color:C[i%C.length]}; a+=sweep; return s;});
+  if(SEG.length>1 && SEG[SEG.length-1].color===SEG[0].color) SEG[SEG.length-1].color=C[(SEG.length+2)%C.length];
 }
 function draw(){
   ctx.clearRect(0,0,cv.width,cv.height);
+  const pool=curPool();
   $("#emptyWheel").style.display=SEG.length?"none":"grid";
+  $("#emptyWheel").textContent=S.lists[pool].length?"這一池已經沒有可抽的人":`在右側匯入本週「${POOLS[pool].name}」名單，輪盤就會出現`;
   if(!SEG.length){ctx.beginPath();ctx.arc(R,R,R-8,0,Math.PI*2);ctx.fillStyle="#EDEDEF";ctx.fill();return;}
   ctx.save(); ctx.translate(R,R); ctx.rotate(rotation);
   SEG.forEach(s=>{
@@ -255,24 +314,21 @@ function draw(){
     ctx.fillStyle=s.color; ctx.fill(); ctx.strokeStyle="#fff"; ctx.lineWidth=4; ctx.stroke();
     const mid=(s.start+s.end)/2-Math.PI/2, sweep=s.end-s.start;
     ctx.save(); ctx.rotate(mid);
-    const fs=Math.max(18,Math.min(54,sweep*R*0.42, 400/Math.max(3,s.name.length)));
+    const fs=Math.max(18,Math.min(54,sweep*R*0.42,400/Math.max(3,s.name.length)));
     ctx.font=`900 ${fs}px "Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif`;
     ctx.fillStyle="#fff"; ctx.textBaseline="middle";
     const flip=Math.cos(mid+rotation)<0; // 左半邊翻正，名字不會倒過來
-    if(flip){ ctx.rotate(Math.PI); ctx.textAlign="left"; } else ctx.textAlign="right";
+    if(flip){ctx.rotate(Math.PI);ctx.textAlign="left";} else ctx.textAlign="right";
     const tx=flip?-(R-46):R-46;
     if(sweep*R>16){ ctx.fillText(s.name,tx,0);
-      if(sweep*R>60){ctx.font=`700 ${Math.round(fs*.55)}px "Noto Sans TC",sans-serif`;ctx.globalAlpha=.85;ctx.fillText(`${s.n} 張`,tx,fs*.85);ctx.globalAlpha=1;} }
+      if(sweep*R>60){ctx.font=`700 ${Math.round(fs*.55)}px "Noto Sans TC",sans-serif`;ctx.globalAlpha=.85;ctx.fillText(Number.isInteger(s.n)?`${s.n} ${POOLS[pool].unit}`:`機會 ${fmt(s.n)}`,tx,fs*.85);ctx.globalAlpha=1;} }
     ctx.restore();
   });
   ctx.restore();
   ctx.beginPath(); ctx.arc(R,R,R-6,0,Math.PI*2); ctx.lineWidth=12; ctx.strokeStyle="#1D1D1F"; ctx.stroke();
   for(let i=0;i<48;i++){const a=i/48*Math.PI*2; ctx.beginPath(); ctx.arc(R+Math.cos(a)*(R-6),R+Math.sin(a)*(R-6),4,0,Math.PI*2); ctx.fillStyle=i%2?"#C9962B":"#fff"; ctx.fill();}
 }
-function segAtPointer(){ // 指針在正上方
-  let a=((-rotation)%(Math.PI*2)+Math.PI*2)%(Math.PI*2);
-  return SEG.findIndex(s=>a>=s.start&&a<s.end);
-}
+function segAtPointer(){ let a=((-rotation)%(Math.PI*2)+Math.PI*2)%(Math.PI*2); return SEG.findIndex(s=>a>=s.start&&a<s.end); }
 
 /* ---------- 音效 ---------- */
 let AC=null;
@@ -281,13 +337,13 @@ function fanfare(){ if(!sound) return; try{ AC=AC||new (window.AudioContext||win
 
 /* ---------- 抽獎 ---------- */
 function rand(){ const u=new Uint32Array(1); (window.crypto||window.msCrypto).getRandomValues(u); return u[0]/4294967296; }
-function pickWeighted(){ const T=total(SEG); let r=Math.floor(rand()*T); for(let i=0;i<SEG.length;i++){ if(r<SEG[i].n) return i; r-=SEG[i].n; } return SEG.length-1; }
+function pickWeighted(){ const T=SEG.reduce((a,s)=>a+s.n,0); let r=rand()*T; for(let i=0;i<SEG.length;i++){ if(r<SEG[i].n) return i; r-=SEG[i].n; } return SEG.length-1; }
 function spin(){
-  if(spinning||S.round>1) return;
-  if(!SEG.length){ toast("請先匯入本週引薦名單"); return; }
+  if(spinning||allDone()||done(S.cur)) return;
+  if(!SEG.length){ toast(`「${POOLS[curPool()].name}」沒有可抽的人，請先匯入名單`); return; }
   spinning=true; renderStage();
   const idx=pickWeighted(), s=SEG[idx];
-  const margin=(s.end-s.start)*.12, target=s.start+margin+rand()*(s.end-s.start-2*margin); // 落在該區塊內（避開邊線）
+  const margin=(s.end-s.start)*.12, target=s.start+margin+rand()*(s.end-s.start-2*margin);
   const cur=((rotation%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
   let delta=(Math.PI*2-target)-cur; while(delta<0) delta+=Math.PI*2;
   delta+=Math.PI*2*(6+Math.floor(rand()*3));
@@ -295,133 +351,150 @@ function spin(){
   const ease=t=>1-Math.pow(1-t,4);
   (function frame(now){
     const t=Math.min(1,(now-t0)/dur); rotation=start+delta*ease(t); draw();
-    const cur=segAtPointer(); if(cur!==last){ tick(); last=cur; }
+    const c=segAtPointer(); if(c!==last){ tick(); last=c; }
     if(t<1) requestAnimationFrame(frame); else { spinning=false; announce(s.name); }
   })(t0);
 }
-let pending=null;
+function slotLabel(i){ const s=slot(i), pr=S.presenters[s.p]; return {pool:POOLS[s.pool].name, gift:pr[s.pool]||`${POOLS[s.pool].what}獎`, by:pr.name}; }
 function announce(name){
-  pending=name; const r=S.round, sp=S["sp"+(r+1)], pz=S["pz"+(r+1)];
-  $("#mRound").textContent=`🎉 第 ${r+1} 份獎品得主`;
+  pending=name; const L=slotLabel(S.cur), pool=curPool();
+  $("#mRound").textContent=`🎉 ${L.pool}｜第 ${S.cur+1} 份獎品得主`; $("#mRound").className="k "+pool;
   $("#mWho").textContent=name;
-  $("#mWhat").innerHTML=`獲得${sp?` <b>${esc(sp)}</b> 提供的`:""}「<b>${esc(pz||"第 "+(r+1)+" 份獎品")}</b>」`;
+  $("#mWhat").innerHTML=`獲得${L.by?` <b>${esc(L.by)}</b> 提供的`:""}「<b>${esc(L.gift)}</b>」`;
   $("#modal").classList.add("on"); fanfare(); confetti();
 }
+function nextSlot(){ const i=S.wins.findIndex(w=>!w); return i<0?S.cur:i; }
 function confirmWin(){
-  S.winners[S.round]=pending; S.round++; pending=null; save();
-  $("#modal").classList.remove("on");
-  if(S.round>1) addLog();
-  renderAll();
+  S.wins[S.cur]=pending; pending=null; $("#modal").classList.remove("on");
+  if(allDone()) addLog(); else S.cur=nextSlot();
+  save(); renderAll();
 }
 function forfeit(){
-  S.absent[S.round].push(pending); pending=null; save();
-  $("#modal").classList.remove("on");
-  toast("已標記棄權，本週不再列入，請重抽"); renderAll();
+  S.skipped[S.cur].push(pending); if(!S.absent.includes(pending)) S.absent.push(pending);
+  pending=null; save(); $("#modal").classList.remove("on");
+  toast("已標記棄權，本週兩個池子都不再列入，請重抽"); renderAll();
 }
 
 /* ---------- 紀錄 ---------- */
-function weekLabel(){ return S.week?S.week.replaceAll("-","/"):new Date().toLocaleDateString("zh-TW"); }
+const weekLabel=()=>S.week?S.week.replaceAll("-","/"):new Date().toLocaleDateString("zh-TW");
 function announcement(){
-  const lines=[`🎡 長橋名人堂分會「付出者收穫」抽獎`,`📅 ${weekLabel()} 例會`,`本週共 ${S.list.length} 位會員、${total(S.list)} 張引薦單參加`];
-  [0,1].forEach(i=>{ const w=S.winners[i]; lines.push(`🎁 第 ${i+1} 份：${S["pz"+(i+1)]||"獎品"}${S["sp"+(i+1)]?`（${S["sp"+(i+1)]} 提供）`:""} → ${w?`恭喜 ${w}！`:"尚未抽出"}`); });
+  const lines=[`🎡 長橋名人堂分會「付出者收穫」抽獎`,`📅 ${weekLabel()} 例會`,
+    `引薦單池 ${S.lists.A.length} 人／${total(S.lists.A)} 張；帶來賓池 ${S.lists.B.length} 人／${total(S.lists.B)} 位來賓`,`規則：${MODES[S.mode]}`];
+  ["A","B"].forEach(pool=>{ lines.push(`【${POOLS[pool].name}】`);
+    SLOTS.forEach((s,i)=>{ if(s.pool!==pool) return; const L=slotLabel(i); lines.push(`🎁 ${L.gift}${L.by?`（${L.by} 提供）`:""} → ${S.wins[i]?`恭喜 ${S.wins[i]}！`:"尚未抽出"}`); }); });
   lines.push("付出越多，機會越多！💪"); return lines.join("\n");
 }
 function addLog(){
   LOG=LOG.filter(x=>x.week!==weekLabel());
-  LOG.unshift({week:weekLabel(),text:`${weekLabel()}｜${S.pz1||"獎品1"}→${S.winners[0]}；${S.pz2||"獎品2"}→${S.winners[1]}（${S.list.length} 人／${total(S.list)} 張）`});
-  store.set("cq_wheel_log",LOG);
+  LOG.unshift({week:weekLabel(),text:`${weekLabel()}｜${MODES[S.mode]}｜`+SLOTS.map((s,i)=>`${POOLS[s.pool].name.slice(0,3)}「${slotLabel(i).gift}」→${S.wins[i]}`).join("；")});
+  store.set("cq_wheel_log2",LOG);
 }
 
 /* ---------- 畫面 ---------- */
-function prizeHtml(i){
-  const done=!!S.winners[i], active=!done&&S.round===i, ab=S.absent[i];
-  return `<div class="lbl">第 ${i+1} 份獎品${done?" ✓":""}</div>
-    <div class="gift">${esc(S["pz"+(i+1)]||"（尚未填寫獎品）")}</div>
-    <div class="by">${S["sp"+(i+1)]?`五分鐘簡報主講者 ${esc(S["sp"+(i+1)])} 提供`:"主講者尚未填寫"}</div>
-    ${done?`<div class="win">🎉 得主<b>${esc(S.winners[i])}</b></div>`:""}
-    ${ab.length?`<div class="absent">棄權：${ab.map(esc).join("、")}</div>`:""}`;
+function renderPresenterForm(){
+  $("#presenterForm").innerHTML=S.presenters.map((p,i)=>`<div class="presenter">
+    <div class="f"><label>第 ${i+1} 位五分鐘簡報主講者</label><input data-pr="${i}" data-k="name" value="${esc(p.name)}" placeholder="主講者姓名"></div>
+    <div class="f A"><label>獎品 1：給「引薦單池」</label><input data-pr="${i}" data-k="A" value="${esc(p.A)}" placeholder="例如：精品堅果禮盒"></div>
+    <div class="f B"><label>獎品 2：給「帶來賓池」</label><input data-pr="${i}" data-k="B" value="${esc(p.B)}" placeholder="例如：品牌設計諮詢一次"></div></div>`).join("");
+  document.querySelectorAll("[data-pr]").forEach(el=>el.addEventListener("input",()=>{S.presenters[+el.dataset.pr][el.dataset.k]=el.value;save();renderStage();}));
 }
 function renderStage(){
-  [0,1].forEach(i=>{const el=$("#prize"+(i+1)); el.innerHTML=prizeHtml(i); el.className="prize"+(S.winners[i]?" done":"")+(!S.winners[i]&&S.round===i?" active":"");});
-  const b=$("#spinBtn");
-  if(S.round>1){ b.disabled=true; b.innerHTML="兩份獎品都已抽出 🎉<small>恭喜得獎者！</small>"; }
-  else { b.disabled=spinning||!SEG.length; b.innerHTML=spinning?"轉動中…":`開始抽第 ${S.round+1} 份獎品<small>按空白鍵也可以開始</small>`; }
-  $("#sPeople").textContent=S.list.length; $("#sTickets").textContent=total(S.list);
-  $("#sWeek").textContent=S.week?S.week.slice(5).replace("-","/"):"—";
-  $("#hubTxt").innerHTML=S.round>1?"恭喜<br>得獎者":`第 ${S.round+1} 輪`; $("#hubSub").textContent=S.round>1?"Givers Gain":"Givers Gain";
+  const pool=curPool();
+  $("#poolTag").textContent=POOLS[pool].name; $("#poolTag").className=pool;
+  $("#prizes").innerHTML=["A","B"].map(pl=>`<div class="grpTitle" style="color:var(--${pl})"><i style="background:var(--${pl})"></i>${POOLS[pl].name}</div>`+
+    SLOTS.map((s,i)=>{ if(s.pool!==pl) return ""; const L=slotLabel(i), ab=S.skipped[i];
+      return `<button type="button" class="prize ${pl}${done(i)?" done":""}${!done(i)&&S.cur===i&&!allDone()?" active":""}" data-slot="${i}">
+        <div class="top"><span>第 ${i+1} 份${done(i)?" ✓":""}</span><span>${L.by?esc(L.by)+" 提供":"主講者未填"}</span></div>
+        <div class="gift">${esc(S.presenters[s.p][s.pool]||"（尚未填寫獎品）")}</div>
+        ${done(i)?`<div class="win">🎉 得主<b>${esc(S.wins[i])}</b></div>`:""}
+        ${ab.length?`<div class="absent">棄權：${ab.map(esc).join("、")}</div>`:""}</button>`;}).join("")).join("");
+  document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.slot; if(spinning||done(i)) return; S.cur=i; save(); renderAll(); });
+  const btn=$("#spinBtn"); btn.className="spin "+pool;
+  if(allDone()){ btn.disabled=true; btn.innerHTML="四份獎品都已抽出 🎉<small>恭喜所有得獎者！</small>"; }
+  else { btn.disabled=spinning||!SEG.length; const L=slotLabel(S.cur); btn.innerHTML=spinning?"轉動中…":`抽第 ${S.cur+1} 份：${esc(L.pool)}<small>${esc(L.gift)}｜按空白鍵也可以開始</small>`; }
+  $("#modeNote").textContent=`目前規則：${MODES[S.mode]}`;
+  $("#hubTxt").innerHTML=allDone()?"恭喜<br>得獎者":`第 ${S.cur+1} 份`;
 }
 function renderTable(){
-  const T=total(pool());
-  $("#totTxt").textContent=S.list.length?`${S.list.length} 人・${total(S.list)} 張`:"";
-  const colorOf=name=>SEG.find(s=>s.name===name)?.color||"#ccc";
-  const abs=absentAll();
-  $("#tbl").innerHTML=S.list.length?[...S.list].sort((a,b)=>b.n-a.n).map(p=>{
-    const isAb=abs.includes(p.name);
-    return `<tr class="${isAb?"absent":""}"><td><span class="sw" style="background:${colorOf(p.name)}"></span>${esc(p.name)}</td>
+  const pool=S.tab, eff=effective(pool), T=Object.values(eff).reduce((a,b)=>a+b,0), U=POOLS[pool];
+  document.querySelectorAll(".tab").forEach(t=>t.classList.toggle("on",t.dataset.tab===pool));
+  $("#tabA").textContent=`${S.lists.A.length} 人・${total(S.lists.A)} 張`; $("#tabB").textContent=`${S.lists.B.length} 人・${total(S.lists.B)} 位來賓`;
+  $("#tblTitle").textContent=`${U.name}名單與機率`; $("#thCount").textContent=pool==="A"?"引薦單":"來賓數";
+  $("#totTxt").textContent=S.lists[pool].length?`${S.lists[pool].length} 人・${total(S.lists[pool])} ${U.unit}`:"";
+  $("#paste").placeholder=pool==="A"?"一行一位：姓名 引薦單張數\n袁敏禎 3\n鄭國信 2\n\n可從 Excel 複製兩欄貼上；同名會自動加總（一列一張也可以）"
+                                    :"一行一位：姓名 帶來的來賓人數\n王思予 2\n林美足 1\n\n同名會自動加總（一列一位來賓也可以）";
+  const colorOf=n=>SEG.find(s=>s.name===n)?.color||"#ccc";
+  $("#tbl").innerHTML=S.lists[pool].length?[...S.lists[pool]].sort((a,b)=>b.n-a.n).map(p=>{
+    const e=eff[p.name], out=e<=0, why=S.absent.includes(p.name)?"棄權":out?"已除名":"";
+    return `<tr class="${out?"out":""}"><td><span class="sw" style="background:${pool===curPool()?colorOf(p.name):"#ccc"}"></span>${esc(p.name)}</td>
       <td class="c"><span class="qty"><button data-dec="${esc(p.name)}" type="button">−</button><b>${p.n}</b><button data-inc="${esc(p.name)}" type="button">＋</button></span></td>
-      <td class="c pct">${isAb?"棄權":T?(p.n/T*100).toFixed(1)+"%":"—"}</td>
+      <td class="c ${e!==p.n&&!out?"eff":""}">${out?"—":fmt(e)}</td>
+      <td class="c pct">${why||(T?(e/T*100).toFixed(1)+"%":"—")}</td>
       <td class="c"><button class="del" data-del="${esc(p.name)}" type="button" title="移除">×</button></td></tr>`;}).join("")
-    :`<tr><td colspan="4" style="color:var(--ink3);padding:10px 6px">尚未匯入名單</td></tr>`;
-  document.querySelectorAll("[data-inc]").forEach(b=>b.onclick=()=>{S.list.find(p=>p.name===b.dataset.inc).n++;save();renderAll();});
-  document.querySelectorAll("[data-dec]").forEach(b=>b.onclick=()=>{const p=S.list.find(p=>p.name===b.dataset.dec);p.n--;S.list=S.list.filter(x=>x.n>0);save();renderAll();});
-  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{S.list=S.list.filter(p=>p.name!==b.dataset.del);save();renderAll();});
+    :`<tr><td colspan="5" style="color:var(--ink3);padding:10px 6px">尚未匯入${U.name}名單</td></tr>`;
+  const L=S.lists;
+  document.querySelectorAll("[data-inc]").forEach(b=>b.onclick=()=>{L[pool].find(p=>p.name===b.dataset.inc).n++;save();renderAll();});
+  document.querySelectorAll("[data-dec]").forEach(b=>b.onclick=()=>{const p=L[pool].find(p=>p.name===b.dataset.dec);p.n--;L[pool]=L[pool].filter(x=>x.n>0);save();renderAll();});
+  document.querySelectorAll("[data-del]").forEach(b=>b.onclick=()=>{L[pool]=L[pool].filter(p=>p.name!==b.dataset.del);save();renderAll();});
 }
 function renderLog(){ $("#log").textContent=LOG.length?LOG.map(x=>x.text).join("\n"):"尚無紀錄"; }
-function renderAll(){ if(!spinning){buildSegments();draw();} renderStage(); renderTable(); renderLog(); }
+function renderModes(){ document.querySelectorAll('input[name=mode]').forEach(r=>{r.checked=r.value===S.mode; r.closest(".mode").classList.toggle("on",r.checked);}); }
+function renderAll(){ if(!spinning){buildSegments();draw();} renderStage(); renderTable(); renderLog(); renderModes(); }
 
-/* ---------- 彩帶 ---------- */
+/* ---------- 彩帶與提示 ---------- */
 function confetti(){
   const c=$("#fx"),x=c.getContext("2d"); c.width=innerWidth; c.height=innerHeight;
-  const P=[...Array(160)].map(()=>({x:innerWidth/2,y:innerHeight/2,vx:(rand()-.5)*18,vy:-rand()*18-4,r:rand()*6+4,c:["#C8102E","#C9962B","#1D1D1F","#FF7A8F","#FFFFFF"][Math.floor(rand()*5)],a:rand()*6}));
+  const P=[...Array(160)].map(()=>({x:innerWidth/2,y:innerHeight/2,vx:(rand()-.5)*18,vy:-rand()*18-4,r:rand()*6+4,c:["#C8102E","#C9962B","#1D1D1F","#2C6BD6","#FFFFFF"][Math.floor(rand()*5)],a:rand()*6}));
   let f=0;(function loop(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.45;p.a+=.2;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
     if(++f<150) requestAnimationFrame(loop); else x.clearRect(0,0,c.width,c.height);})();
 }
-function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("on"),2000)}
+function toast(t){const el=$("#toast");el.textContent=t;el.classList.add("on");clearTimeout(toast._t);toast._t=setTimeout(()=>el.classList.remove("on"),2200)}
 function copy(t,msg){ (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast(msg),()=>{ const ta=document.createElement("textarea"); ta.value=t; document.body.appendChild(ta); ta.select(); try{document.execCommand("copy");toast(msg)}catch(e){toast("無法複製")} ta.remove(); }); }
 
-/* ---------- 綁定 ---------- */
-["week","sp1","pz1","sp2","pz2"].forEach(k=>{ const el=$("#"+k); el.value=S[k]||""; el.addEventListener("input",()=>{S[k]=el.value;save();renderStage();}); });
-if(!S.week){ const d=new Date(); const off=(4-d.getDay()+7)%7; d.setDate(d.getDate()+off); S.week=d.toISOString().slice(0,10); $("#week").value=S.week; save(); } // 預設下一個週四
-$("#importReplace").onclick=()=>{const it=parse($("#paste").value); if(!it.length) return toast("沒有讀到名單，格式：姓名 張數"); if(S.round>0&&!confirm("已經開始抽獎，取代名單會重新開始本週抽獎，確定嗎？")) return; S.winners=[null,null];S.absent=[[],[]];S.round=0; merge(it,true); $("#paste").value=""; toast(`已匯入 ${it.length} 位`);};
-$("#importAdd").onclick=()=>{const it=parse($("#paste").value); if(!it.length) return toast("沒有讀到名單"); merge(it,false); $("#paste").value=""; toast(`已加入 ${it.length} 位`);};
-$("#clearList").onclick=()=>{ if(!S.list.length||confirm("清空本週名單？")){S.list=[];S.winners=[null,null];S.absent=[[],[]];S.round=0;save();renderAll();} };
+/* ---------- 會員快速名單 ---------- */
 let ROSTER=store.get("cq_wheel_roster",null)||[...ROSTER_DEFAULT], editing=false;
 const saveRoster=()=>store.set("cq_wheel_roster",ROSTER);
 function renderRoster(){
   const box=$("#roster"); box.classList.toggle("editing",editing);
-  box.innerHTML=ROSTER.length?ROSTER.map(n=>`<button class="chip" type="button" data-add="${esc(n)}" title="${editing?"移除":"＋1 張"}">${esc(n)}</button>`).join(""):`<span class="hint">名單是空的，按「增減會員」加入。</span>`;
-  box.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{
-    const n=b.dataset.add;
-    if(editing){ if(confirm(`從快速加入名單移除「${n}」？`)){ ROSTER=ROSTER.filter(x=>x!==n); saveRoster(); renderRoster(); toast(`已移除 ${n}`);} }
-    else merge([{name:n,n:1}],false);
-  });
+  box.innerHTML=ROSTER.length?ROSTER.map(n=>`<button class="chip" type="button" data-add="${esc(n)}">${esc(n)}</button>`).join(""):`<span class="hint">名單是空的，按「增減會員」加入。</span>`;
+  box.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{ const n=b.dataset.add;
+    if(editing){ if(confirm(`從快速加入名單移除「${n}」？`)){ ROSTER=ROSTER.filter(x=>x!==n); saveRoster(); renderRoster(); } }
+    else { merge(S.tab,[{name:n,n:1}],false); toast(`${n} 在${POOLS[S.tab].name}＋1`); } });
 }
-function addRoster(){
-  const names=$("#rosterNew").value.split(/[,，、\s]+/).map(x=>x.trim()).filter(Boolean);
-  const added=names.filter(n=>!ROSTER.includes(n)); if(!added.length) return toast(names.length?"已經在名單裡了":"請輸入姓名");
-  ROSTER.push(...added); saveRoster(); $("#rosterNew").value=""; renderRoster(); toast(`已加入 ${added.join("、")}`);
-}
+function addRoster(){ const names=$("#rosterNew").value.split(/[,，、\s]+/).map(x=>x.trim()).filter(Boolean); const added=names.filter(n=>!ROSTER.includes(n));
+  if(!added.length) return toast(names.length?"已經在名單裡了":"請輸入姓名"); ROSTER.push(...added); saveRoster(); $("#rosterNew").value=""; renderRoster(); toast(`已加入 ${added.join("、")}`); }
+
+/* ---------- 綁定 ---------- */
+if(!S.week){ const d=new Date(); d.setDate(d.getDate()+((4-d.getDay()+7)%7)); S.week=d.toISOString().slice(0,10); save(); } // 預設下一個週四
+$("#week").value=S.week; $("#week").addEventListener("input",e=>{S.week=e.target.value;save();});
+renderPresenterForm();
+document.querySelectorAll('input[name=mode]').forEach(r=>r.addEventListener("change",()=>{ if(spinning) return renderAll(); S.mode=r.value; save(); renderAll(); toast(`規則改為：${MODES[S.mode]}`); }));
+document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{S.tab=t.dataset.tab;save();renderTable();});
+const resetDraws=()=>{S.wins=[null,null,null,null];S.absent=[];S.skipped=[[],[],[],[]];S.cur=0;};
+$("#importReplace").onclick=()=>{ const it=parse($("#paste").value); if(!it.length) return toast("沒有讀到名單，格式：姓名 數量");
+  if(S.wins.some(Boolean)){ if(!confirm("已經開始抽獎，取代名單會重新開始本週抽獎，確定嗎？")) return; resetDraws(); }
+  merge(S.tab,it,true); $("#paste").value=""; toast(`${POOLS[S.tab].name}已匯入 ${it.length} 位`); };
+$("#importAdd").onclick=()=>{ const it=parse($("#paste").value); if(!it.length) return toast("沒有讀到名單"); merge(S.tab,it,false); $("#paste").value=""; toast(`已加入 ${it.length} 位`); };
+$("#clearList").onclick=()=>{ if(!S.lists[S.tab].length||confirm(`清空${POOLS[S.tab].name}？`)){ S.lists[S.tab]=[]; save(); renderAll(); } };
+$("#spinBtn").onclick=spin; $("#mOk").onclick=confirmWin; $("#mSkip").onclick=forfeit;
+$("#resetDraw").onclick=()=>{ if(confirm("重新開始本週抽獎？（名單與獎品保留，得獎與棄權清除）")){ resetDraws(); save(); renderAll(); } };
+$("#copyBtn").onclick=()=>copy(announcement(),"得獎公告已複製，可貼到 LINE");
+$("#copyLog").onclick=()=>copy(LOG.map(x=>x.text).join("\n")||"尚無紀錄","紀錄已複製");
+$("#clearLog").onclick=()=>{ if(confirm("清除所有抽獎紀錄？")){LOG=[];store.set("cq_wheel_log2",LOG);renderLog();} };
 $("#rosterEdit").onclick=()=>{ editing=!editing; $("#rosterTools").hidden=!editing; $("#rosterEdit").textContent=editing?"✓ 完成":"✏️ 增減會員"; renderRoster(); if(editing) $("#rosterNew").focus(); };
 $("#rosterAdd").onclick=addRoster;
 $("#rosterNew").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.isComposing){ e.preventDefault(); addRoster(); } });
-$("#rosterReset").onclick=()=>{ if(confirm("恢復成預設會員名單？你新增或移除的會被還原。")){ ROSTER=[...ROSTER_DEFAULT]; saveRoster(); renderRoster(); } };
-renderRoster();
-$("#spinBtn").onclick=spin;
-$("#mOk").onclick=confirmWin; $("#mSkip").onclick=forfeit;
-$("#resetDraw").onclick=()=>{ if(confirm("重新開始本週抽獎？（名單保留，得獎與棄權清除）")){S.winners=[null,null];S.absent=[[],[]];S.round=0;save();renderAll();} };
-$("#copyBtn").onclick=()=>copy(announcement(),"得獎公告已複製，可貼到 LINE");
-$("#copyLog").onclick=()=>copy(LOG.map(x=>x.text).join("\n")||"尚無紀錄","紀錄已複製");
-$("#clearLog").onclick=()=>{ if(confirm("清除所有抽獎紀錄？")){LOG=[];store.set("cq_wheel_log",LOG);renderLog();} };
+$("#rosterReset").onclick=()=>{ if(confirm("恢復成預設會員名單？")){ ROSTER=[...ROSTER_DEFAULT]; saveRoster(); renderRoster(); } };
 $("#btnHost").onclick=()=>{document.body.classList.toggle("host");$("#btnHost").classList.toggle("on");setTimeout(draw,50);};
 $("#btnFull").onclick=()=>{ try{ document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen(); }catch(e){} };
 $("#btnSound").onclick=()=>{sound=!sound;$("#btnSound").textContent=sound?"🔊 音效開":"🔇 音效關";};
 document.addEventListener("keydown",e=>{
   if($("#modal").classList.contains("on")){ if(e.key==="Enter"){e.preventDefault();confirmWin();} return; }
-  if(e.code==="Space" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); spin(); }
+  if(e.code==="Space" && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)){ e.preventDefault(); spin(); }
 });
 // 從簡報點進來時（網址帶 ?host=1）直接進入主持模式
 try{ if(new URLSearchParams(location.search).has("host")){ document.body.classList.add("host"); $("#btnHost").classList.add("on"); } }catch(e){}
-renderAll();
+renderRoster(); renderAll();
 </script>
 </body>
 </html>
