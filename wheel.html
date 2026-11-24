@@ -419,6 +419,8 @@ document.addEventListener("keydown",e=>{
   if($("#modal").classList.contains("on")){ if(e.key==="Enter"){e.preventDefault();confirmWin();} return; }
   if(e.code==="Space" && !/INPUT|TEXTAREA/.test(document.activeElement.tagName)){ e.preventDefault(); spin(); }
 });
+// 從簡報點進來時（網址帶 ?host=1）直接進入主持模式
+try{ if(new URLSearchParams(location.search).has("host")){ document.body.classList.add("host"); $("#btnHost").classList.add("on"); } }catch(e){}
 renderAll();
 </script>
 </body>
