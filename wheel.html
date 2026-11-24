@@ -84,6 +84,8 @@ textarea{min-height:120px;resize:vertical;font-family:inherit;line-height:1.5}
 .chips{display:flex;flex-wrap:wrap;gap:6px;max-height:150px;overflow:auto;padding:2px}
 .chip{border:1px solid var(--line);background:#FAFAF9;border-radius:999px;padding:2px 10px;font-size:13px;color:var(--ink2)}
 .chip:hover{border-color:var(--red);color:var(--red)}
+.chips.editing .chip{background:#fff;border-style:dashed}
+.chips.editing .chip:after{content:" ×";color:var(--red);font-weight:900}
 table{width:100%;border-collapse:collapse;font-size:14px}
 th{font-size:12px;color:var(--ink3);font-weight:500;text-align:left;padding:4px 6px;border-bottom:1px solid var(--line)}
 td{padding:5px 6px;border-bottom:1px solid #F2F2F3;vertical-align:middle}
@@ -164,8 +166,12 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
       <h2><span class="n">2</span>匯入本週引薦名單<small>副主席從 BNI Connect 整理</small></h2>
       <textarea id="paste" placeholder="一行一位：姓名 張數&#10;袁敏禎 3&#10;鄭國信 2&#10;王思予 1&#10;&#10;也可直接從 Excel 複製兩欄貼上；同一個名字出現多次會自動加總（一列一張引薦單也可以）"></textarea>
       <div class="btnrow"><button class="btn red" id="importReplace" type="button">取代名單</button><button class="btn out" id="importAdd" type="button">加入名單</button><button class="btn out" id="clearList" type="button">清空</button></div>
-      <div class="hint">快速加入（點一下＋1 張）：</div>
+      <div class="hint" style="display:flex;justify-content:space-between;align-items:center">快速加入（點一下＋1 張）：<button class="btn out" id="rosterEdit" type="button" style="padding:3px 10px;font-size:12.5px">✏️ 增減會員</button></div>
       <div class="chips" id="roster"></div>
+      <div id="rosterTools" hidden style="margin-top:8px">
+        <div style="display:flex;gap:6px"><div class="f" style="flex:1"><input id="rosterNew" placeholder="新會員姓名，按 Enter 加入"></div><button class="btn red" id="rosterAdd" type="button">加入</button></div>
+        <div class="hint">編輯中：點會員名字旁的 × 即可移除。名單存在這台電腦。<button class="btn out" id="rosterReset" type="button" style="padding:2px 8px;font-size:12px;margin-left:4px">恢復預設</button></div>
+      </div>
     </section>
 
     <section class="card sec">
@@ -196,7 +202,7 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
 
 <script>
 /* 快速加入用的會員名單（與分會網站一致，可自行增減） */
-const ROSTER=["郭羽庭","唐國蘭","鄭國信","師嘉孝","段承韻","陳美蓉","𡩋振福","袁敏禎","王思予","林美足","鄭學謙","田小燕","林小蕎","江懿哲","李雅雯","林鈞芃","林筱錡","吳得維","黃巧茵","張筱博","郭盈甫","徐晉棠","楊小青","陳沛羽","嚴麒祥","莊彥瑄","蘇豊文","李宥綸","李惠珠","廖毓靖","周信廷","陳政顯","黃俊儒","林詩庭"];
+const ROSTER_DEFAULT=["郭羽庭","唐國蘭","鄭國信","師嘉孝","段承韻","陳美蓉","𡩋振福","袁敏禎","王思予","林美足","鄭學謙","田小燕","林小蕎","江懿哲","李雅雯","林鈞芃","林筱錡","吳得維","黃巧茵","張筱博","郭盈甫","徐晉棠","楊小青","陳沛羽","嚴麒祥","莊彥瑄","蘇豊文","李宥綸","李惠珠","廖毓靖","周信廷","陳政顯","黃俊儒"];
 const COLORS=["#C8102E","#1D1D1F","#C9962B","#6B6B72","#E2475E","#3A3A40","#B5832A","#9E0B23","#8E8E95","#D9A441"];
 
 const $=s=>document.querySelector(s);
@@ -379,8 +385,27 @@ if(!S.week){ const d=new Date(); const off=(4-d.getDay()+7)%7; d.setDate(d.getDa
 $("#importReplace").onclick=()=>{const it=parse($("#paste").value); if(!it.length) return toast("沒有讀到名單，格式：姓名 張數"); if(S.round>0&&!confirm("已經開始抽獎，取代名單會重新開始本週抽獎，確定嗎？")) return; S.winners=[null,null];S.absent=[[],[]];S.round=0; merge(it,true); $("#paste").value=""; toast(`已匯入 ${it.length} 位`);};
 $("#importAdd").onclick=()=>{const it=parse($("#paste").value); if(!it.length) return toast("沒有讀到名單"); merge(it,false); $("#paste").value=""; toast(`已加入 ${it.length} 位`);};
 $("#clearList").onclick=()=>{ if(!S.list.length||confirm("清空本週名單？")){S.list=[];S.winners=[null,null];S.absent=[[],[]];S.round=0;save();renderAll();} };
-$("#roster").innerHTML=ROSTER.map(n=>`<button class="chip" type="button" data-add="${esc(n)}">${esc(n)}</button>`).join("");
-document.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>merge([{name:b.dataset.add,n:1}],false));
+let ROSTER=store.get("cq_wheel_roster",null)||[...ROSTER_DEFAULT], editing=false;
+const saveRoster=()=>store.set("cq_wheel_roster",ROSTER);
+function renderRoster(){
+  const box=$("#roster"); box.classList.toggle("editing",editing);
+  box.innerHTML=ROSTER.length?ROSTER.map(n=>`<button class="chip" type="button" data-add="${esc(n)}" title="${editing?"移除":"＋1 張"}">${esc(n)}</button>`).join(""):`<span class="hint">名單是空的，按「增減會員」加入。</span>`;
+  box.querySelectorAll("[data-add]").forEach(b=>b.onclick=()=>{
+    const n=b.dataset.add;
+    if(editing){ if(confirm(`從快速加入名單移除「${n}」？`)){ ROSTER=ROSTER.filter(x=>x!==n); saveRoster(); renderRoster(); toast(`已移除 ${n}`);} }
+    else merge([{name:n,n:1}],false);
+  });
+}
+function addRoster(){
+  const names=$("#rosterNew").value.split(/[,，、\s]+/).map(x=>x.trim()).filter(Boolean);
+  const added=names.filter(n=>!ROSTER.includes(n)); if(!added.length) return toast(names.length?"已經在名單裡了":"請輸入姓名");
+  ROSTER.push(...added); saveRoster(); $("#rosterNew").value=""; renderRoster(); toast(`已加入 ${added.join("、")}`);
+}
+$("#rosterEdit").onclick=()=>{ editing=!editing; $("#rosterTools").hidden=!editing; $("#rosterEdit").textContent=editing?"✓ 完成":"✏️ 增減會員"; renderRoster(); if(editing) $("#rosterNew").focus(); };
+$("#rosterAdd").onclick=addRoster;
+$("#rosterNew").addEventListener("keydown",e=>{ if(e.key==="Enter"&&!e.isComposing){ e.preventDefault(); addRoster(); } });
+$("#rosterReset").onclick=()=>{ if(confirm("恢復成預設會員名單？你新增或移除的會被還原。")){ ROSTER=[...ROSTER_DEFAULT]; saveRoster(); renderRoster(); } };
+renderRoster();
 $("#spinBtn").onclick=spin;
 $("#mOk").onclick=confirmWin; $("#mSkip").onclick=forfeit;
 $("#resetDraw").onclick=()=>{ if(confirm("重新開始本週抽獎？（名單保留，得獎與棄權清除）")){S.winners=[null,null];S.absent=[[],[]];S.round=0;save();renderAll();} };
