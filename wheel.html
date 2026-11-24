@@ -58,6 +58,7 @@ body.host .wheelBox{max-width:min(720px,calc(100vh - 190px))}
 .prize .gift{font-size:16px;font-weight:900;margin-top:1px;line-height:1.35}
 .prize .win{font-size:13px;color:#8A6417;margin-top:4px}
 .prize .win b{font-size:22px;color:var(--ink);margin-left:4px}
+.prize .movedNote{font-size:12px;color:var(--A);font-weight:700;margin-top:2px}
 .prize .absent{font-size:12px;color:var(--ink3);margin-top:2px}
 .spin{background:var(--red);color:#fff;border:0;border-radius:14px;padding:16px;font-size:21px;font-weight:900;letter-spacing:.03em;box-shadow:0 6px 18px rgba(200,16,46,.35);transition:.15s}
 .spin.B{background:var(--B);box-shadow:0 6px 18px rgba(44,107,214,.35)}
@@ -186,17 +187,17 @@ canvas#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-in
       <h2><span class="n">2</span>中獎後的機率規則</h2>
       <div class="modes">
         <label class="mode"><input type="radio" name="mode" value="remove"><div><b>抽中即除名</b><span>中獎後從該池移除，同一池不會再中獎</span></div></label>
-        <label class="mode"><input type="radio" name="mode" value="half"><div><b>抽中機率減半</b><span>中獎後在該池的機會變成一半，仍可能再中</span></div></label>
+        <label class="mode"><input type="radio" name="mode" value="minus"><div><b>抽中減一張</b><span>中獎後引薦單少算 1 張（例：8 張→7 張），機率降低但仍可能再中</span></div></label>
         <label class="mode"><input type="radio" name="mode" value="keep"><div><b>機率不變</b><span>原規則：中獎不移除，也不改變機率</span></div></label>
       </div>
-      <div class="hint">規則只影響「同一池」，兩個池子分開計算。抽獎中途切換，會依新規則重新計算剩下的機率。</div>
+      <div class="hint">規則套用在引薦單池。帶來賓池每人最多中一份；來賓池沒有可抽的人時，剩下的來賓池獎品改從引薦單池抽。抽獎中途切換規則，會依新規則重新計算剩下的機率。</div>
     </section>
 
     <section class="card sec">
       <h2><span class="n">3</span>匯入本週名單<small>副主席從 BNI Connect 整理</small></h2>
       <div class="tabs">
-        <button class="tab A" data-tab="A" type="button">引薦單池<br><small id="tabA"></small></button>
         <button class="tab B" data-tab="B" type="button">帶來賓池<br><small id="tabB"></small></button>
+        <button class="tab A" data-tab="A" type="button">引薦單池<br><small id="tabA"></small></button>
       </div>
       <textarea id="paste"></textarea>
       <div class="btnrow"><button class="btn red" id="importReplace" type="button">取代名單</button><button class="btn out" id="importAdd" type="button">加入名單</button><button class="btn out" id="clearList" type="button">清空這一池</button></div>
@@ -240,9 +241,10 @@ const ROSTER_DEFAULT=["郭羽庭","唐國蘭","鄭國信","師嘉孝","段承韻
 
 const POOLS={A:{name:"引薦單池",unit:"張",what:"引薦單",colors:["#C8102E","#1D1D1F","#C9962B","#6B6B72","#E2475E","#3A3A40","#B5832A","#9E0B23","#8E8E95","#D9A441"]},
              B:{name:"帶來賓池",unit:"位",what:"帶來賓",colors:["#2C6BD6","#1D1D1F","#C9962B","#5B8DEF","#3A3A40","#1E4E9E","#8E8E95","#D9A441","#6B6B72","#7FA7F0"]}};
-// 抽獎順序：先抽引薦單池兩份，再抽帶來賓池兩份（也可以在右側直接點選要抽哪一份）
-const SLOTS=[{p:0,pool:"A"},{p:1,pool:"A"},{p:0,pool:"B"},{p:1,pool:"B"}];
-const MODES={remove:"抽中即除名",half:"抽中機率減半",keep:"機率不變"};
+// 抽獎順序：帶來賓池優先（兩份），再抽引薦單池（兩份）
+// 帶來賓池每人最多中一份；來賓池已經沒有可抽的人時，剩下的來賓池獎品自動改從引薦單池抽
+const SLOTS=[{p:0,pool:"B"},{p:1,pool:"B"},{p:0,pool:"A"},{p:1,pool:"A"}];
+const MODES={remove:"抽中即除名",minus:"抽中減一張",keep:"機率不變"};
 
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -250,25 +252,31 @@ const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v)
 const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(2).replace(/0+$/,"").replace(/\.$/,"");
 
 /* ---------- 狀態 ---------- */
-function blank(){return {week:"",presenters:[{name:"",A:"",B:""},{name:"",A:"",B:""}],lists:{A:[],B:[]},wins:[null,null,null,null],absent:[],skipped:[[],[],[],[]],cur:0,mode:"remove",tab:"A"};}
+function blank(){return {v:3,week:"",presenters:[{name:"",A:"",B:""},{name:"",A:"",B:""}],lists:{A:[],B:[]},wins:[null,null,null,null],drawn:[null,null,null,null],absent:[],skipped:[[],[],[],[]],cur:0,mode:"remove",tab:"B"};}
 let S=store.get("cq_wheel_v2",null);
 if(!S){ S=blank(); const old=store.get("cq_wheel_state",null);
   if(old){ S.week=old.week||""; S.lists.A=(old.list||[]).map(x=>({name:x.name,n:x.n}));
     S.presenters[0]={name:old.sp1||"",A:old.pz1||"",B:""}; S.presenters[1]={name:old.sp2||"",A:old.pz2||"",B:""}; } }
+if(S.mode==="half") S.mode="minus"; // 舊版「減半」改為「減一張」
+if(S.v!==3){ S.v=3; S.wins=[null,null,null,null]; S.drawn=[null,null,null,null]; S.absent=[]; S.skipped=[[],[],[],[]]; S.cur=0; } // 新順序：清掉舊版的抽獎進度（名單與獎品保留）
 let LOG=store.get("cq_wheel_log2",null)||store.get("cq_wheel_log",[]).map(x=>({week:x.week,text:x.text}));
-let rotation=0, spinning=false, sound=true, pending=null;
+let rotation=0, spinning=false, sound=true, pending=null, spinPool=null;
 const save=()=>store.set("cq_wheel_v2",S);
 const slot=i=>SLOTS[i];
 const done=i=>!!S.wins[i];
 const allDone=()=>S.wins.every(Boolean);
-const curPool=()=>slot(S.cur)?.pool||"A";
+// 這一份實際從哪一池抽：已抽出的看紀錄；來賓池沒有可抽的人就改從引薦單池
+function poolFor(i){ if(done(i)) return S.drawn[i]||slot(i).pool; const s=slot(i); return s.pool==="B"&&eligible("B")>0?"B":"A"; }
+const eligible=pool=>{const e=effective(pool); return Object.values(e).filter(v=>v>0).length;};
+const moved=i=>slot(i).pool==="B"&&poolFor(i)==="A";
+const curPool=()=>poolFor(S.cur);
 const total=arr=>arr.reduce((a,p)=>a+p.n,0);
 
 /* 目前機會：依原始數量、同池已確認的得獎（依序）、規則與棄權計算 */
 function effective(pool){
   const m={}; S.lists[pool].forEach(p=>m[p.name]=p.n);
-  SLOTS.forEach((s,i)=>{ const w=S.wins[i]; if(s.pool!==pool||!w||!(w in m)) return;
-    if(S.mode==="remove") m[w]=0; else if(S.mode==="half") m[w]=m[w]/2; });
+  SLOTS.forEach((s,i)=>{ const w=S.wins[i]; if((S.drawn[i]||s.pool)!==pool||!w||!(w in m)) return;
+    if(pool==="B"||S.mode==="remove") m[w]=0; else if(S.mode==="minus") m[w]=Math.max(0,m[w]-1); }); // 來賓池每人最多一份
   S.absent.forEach(n=>{ if(n in m) m[n]=0; });
   return m;
 }
@@ -341,7 +349,7 @@ function pickWeighted(){ const T=SEG.reduce((a,s)=>a+s.n,0); let r=rand()*T; for
 function spin(){
   if(spinning||allDone()||done(S.cur)) return;
   if(!SEG.length){ toast(`「${POOLS[curPool()].name}」沒有可抽的人，請先匯入名單`); return; }
-  spinning=true; renderStage();
+  spinning=true; spinPool=curPool(); renderStage();
   const idx=pickWeighted(), s=SEG[idx];
   const margin=(s.end-s.start)*.12, target=s.start+margin+rand()*(s.end-s.start-2*margin);
   const cur=((rotation%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
@@ -355,17 +363,17 @@ function spin(){
     if(t<1) requestAnimationFrame(frame); else { spinning=false; announce(s.name); }
   })(t0);
 }
-function slotLabel(i){ const s=slot(i), pr=S.presenters[s.p]; return {pool:POOLS[s.pool].name, gift:pr[s.pool]||`${POOLS[s.pool].what}獎`, by:pr.name}; }
+function slotLabel(i){ const s=slot(i), pr=S.presenters[s.p]; return {pool:POOLS[poolFor(i)].name, gift:pr[s.pool]||`${POOLS[s.pool].what}獎`, by:pr.name, moved:moved(i)}; }
 function announce(name){
   pending=name; const L=slotLabel(S.cur), pool=curPool();
-  $("#mRound").textContent=`🎉 ${L.pool}｜第 ${S.cur+1} 份獎品得主`; $("#mRound").className="k "+pool;
+  $("#mRound").textContent=`🎉 ${L.pool}${L.moved?"（來賓池獎品轉入）":""}｜第 ${S.cur+1} 份獎品得主`; $("#mRound").className="k "+pool;
   $("#mWho").textContent=name;
   $("#mWhat").innerHTML=`獲得${L.by?` <b>${esc(L.by)}</b> 提供的`:""}「<b>${esc(L.gift)}</b>」`;
   $("#modal").classList.add("on"); fanfare(); confetti();
 }
 function nextSlot(){ const i=S.wins.findIndex(w=>!w); return i<0?S.cur:i; }
 function confirmWin(){
-  S.wins[S.cur]=pending; pending=null; $("#modal").classList.remove("on");
+  S.wins[S.cur]=pending; S.drawn[S.cur]=spinPool||curPool(); pending=null; $("#modal").classList.remove("on");
   if(allDone()) addLog(); else S.cur=nextSlot();
   save(); renderAll();
 }
@@ -380,13 +388,13 @@ const weekLabel=()=>S.week?S.week.replaceAll("-","/"):new Date().toLocaleDateStr
 function announcement(){
   const lines=[`🎡 長橋名人堂分會「付出者收穫」抽獎`,`📅 ${weekLabel()} 例會`,
     `引薦單池 ${S.lists.A.length} 人／${total(S.lists.A)} 張；帶來賓池 ${S.lists.B.length} 人／${total(S.lists.B)} 位來賓`,`規則：${MODES[S.mode]}`];
-  ["A","B"].forEach(pool=>{ lines.push(`【${POOLS[pool].name}】`);
-    SLOTS.forEach((s,i)=>{ if(s.pool!==pool) return; const L=slotLabel(i); lines.push(`🎁 ${L.gift}${L.by?`（${L.by} 提供）`:""} → ${S.wins[i]?`恭喜 ${S.wins[i]}！`:"尚未抽出"}`); }); });
+  ["B","A"].forEach(pool=>{ lines.push(`【${POOLS[pool].name}】`);
+    SLOTS.forEach((s,i)=>{ if(s.pool!==pool) return; const L=slotLabel(i); lines.push(`🎁 ${L.gift}${L.by?`（${L.by} 提供）`:""}${L.moved?"［來賓池無人，改從引薦單池抽出］":""} → ${S.wins[i]?`恭喜 ${S.wins[i]}！`:"尚未抽出"}`); }); });
   lines.push("付出越多，機會越多！💪"); return lines.join("\n");
 }
 function addLog(){
   LOG=LOG.filter(x=>x.week!==weekLabel());
-  LOG.unshift({week:weekLabel(),text:`${weekLabel()}｜${MODES[S.mode]}｜`+SLOTS.map((s,i)=>`${POOLS[s.pool].name.slice(0,3)}「${slotLabel(i).gift}」→${S.wins[i]}`).join("；")});
+  LOG.unshift({week:weekLabel(),text:`${weekLabel()}｜${MODES[S.mode]}｜`+SLOTS.map((s,i)=>`${POOLS[s.pool].name.slice(0,3)}${moved(i)?"(轉引薦單池)":""}「${slotLabel(i).gift}」→${S.wins[i]}`).join("；")});
   store.set("cq_wheel_log2",LOG);
 }
 
@@ -394,18 +402,19 @@ function addLog(){
 function renderPresenterForm(){
   $("#presenterForm").innerHTML=S.presenters.map((p,i)=>`<div class="presenter">
     <div class="f"><label>第 ${i+1} 位五分鐘簡報主講者</label><input data-pr="${i}" data-k="name" value="${esc(p.name)}" placeholder="主講者姓名"></div>
-    <div class="f A"><label>獎品 1：給「引薦單池」</label><input data-pr="${i}" data-k="A" value="${esc(p.A)}" placeholder="例如：精品堅果禮盒"></div>
-    <div class="f B"><label>獎品 2：給「帶來賓池」</label><input data-pr="${i}" data-k="B" value="${esc(p.B)}" placeholder="例如：品牌設計諮詢一次"></div></div>`).join("");
+    <div class="f B"><label>獎品 1：給「帶來賓池」（優先抽）</label><input data-pr="${i}" data-k="B" value="${esc(p.B)}" placeholder="例如：品牌設計諮詢一次"></div>
+    <div class="f A"><label>獎品 2：給「引薦單池」</label><input data-pr="${i}" data-k="A" value="${esc(p.A)}" placeholder="例如：精品堅果禮盒"></div></div>`).join("");
   document.querySelectorAll("[data-pr]").forEach(el=>el.addEventListener("input",()=>{S.presenters[+el.dataset.pr][el.dataset.k]=el.value;save();renderStage();}));
 }
 function renderStage(){
   const pool=curPool();
   $("#poolTag").textContent=POOLS[pool].name; $("#poolTag").className=pool;
-  $("#prizes").innerHTML=["A","B"].map(pl=>`<div class="grpTitle" style="color:var(--${pl})"><i style="background:var(--${pl})"></i>${POOLS[pl].name}</div>`+
+  $("#prizes").innerHTML=["B","A"].map(pl=>`<div class="grpTitle" style="color:var(--${pl})"><i style="background:var(--${pl})"></i>${POOLS[pl].name}${pl==="B"?"（優先）":""}</div>`+
     SLOTS.map((s,i)=>{ if(s.pool!==pl) return ""; const L=slotLabel(i), ab=S.skipped[i];
-      return `<button type="button" class="prize ${pl}${done(i)?" done":""}${!done(i)&&S.cur===i&&!allDone()?" active":""}" data-slot="${i}">
+      return `<button type="button" class="prize ${poolFor(i)}${done(i)?" done":""}${!done(i)&&S.cur===i&&!allDone()?" active":""}" data-slot="${i}">
         <div class="top"><span>第 ${i+1} 份${done(i)?" ✓":""}</span><span>${L.by?esc(L.by)+" 提供":"主講者未填"}</span></div>
         <div class="gift">${esc(S.presenters[s.p][s.pool]||"（尚未填寫獎品）")}</div>
+        ${L.moved?`<div class="movedNote">來賓池已無人可抽，這份改從引薦單池抽</div>`:""}
         ${done(i)?`<div class="win">🎉 得主<b>${esc(S.wins[i])}</b></div>`:""}
         ${ab.length?`<div class="absent">棄權：${ab.map(esc).join("、")}</div>`:""}</button>`;}).join("")).join("");
   document.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{ const i=+b.dataset.slot; if(spinning||done(i)) return; S.cur=i; save(); renderAll(); });
@@ -470,7 +479,7 @@ $("#week").value=S.week; $("#week").addEventListener("input",e=>{S.week=e.target
 renderPresenterForm();
 document.querySelectorAll('input[name=mode]').forEach(r=>r.addEventListener("change",()=>{ if(spinning) return renderAll(); S.mode=r.value; save(); renderAll(); toast(`規則改為：${MODES[S.mode]}`); }));
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{S.tab=t.dataset.tab;save();renderTable();});
-const resetDraws=()=>{S.wins=[null,null,null,null];S.absent=[];S.skipped=[[],[],[],[]];S.cur=0;};
+const resetDraws=()=>{S.wins=[null,null,null,null];S.drawn=[null,null,null,null];S.absent=[];S.skipped=[[],[],[],[]];S.cur=0;};
 $("#importReplace").onclick=()=>{ const it=parse($("#paste").value); if(!it.length) return toast("沒有讀到名單，格式：姓名 數量");
   if(S.wins.some(Boolean)){ if(!confirm("已經開始抽獎，取代名單會重新開始本週抽獎，確定嗎？")) return; resetDraws(); }
   merge(S.tab,it,true); $("#paste").value=""; toast(`${POOLS[S.tab].name}已匯入 ${it.length} 位`); };
